@@ -17,8 +17,9 @@ if(NOT result EQUAL 0)
 endif()
 
 # OpenGL setup
-add_subdirectory(external/glfw)
-add_subdirectory(external/glad)
+add_subdirectory(External/glfw)
+add_subdirectory(External/glad)
+add_subdirectory(External/imgui)
 
 # Executable setup
 add_executable(Luapp)
@@ -32,4 +33,5 @@ target_link_libraries(Luapp
    PRIVATE 
       glfw
       glad
+      imgui
 )

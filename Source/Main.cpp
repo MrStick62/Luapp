@@ -3,6 +3,10 @@
 #include "glad/gl.h"
 #include "GLFW/glfw3.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
 
@@ -10,6 +14,9 @@ const char* APP_NAME = "Luapp";
 
 int main()
 {
+   /**
+    *    Initialize GLFW/WINDOW
+    */
    glfwInit();
 
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -20,9 +27,9 @@ int main()
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-   GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME, NULL, NULL);
+   GLFWwindow* Window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME, NULL, NULL);
 
-   if (!window)
+   if (!Window)
    {
       std::cerr << "Failed to create GLFW window!" << std::endl;
 
@@ -30,19 +37,73 @@ int main()
       return 1;
    }
 
-   glfwMakeContextCurrent(window);
+   glfwMakeContextCurrent(Window);
 
-   int version = gladLoadGL(glfwGetProcAddress);
+   /**
+    *    Initialize GLAD
+    */
 
-   while (!glfwWindowShouldClose(window))
+   int Version = gladLoadGL(glfwGetProcAddress);
+
+   if (!Version)
+   {
+      std::cerr << "Failed to initialize GLAD!" << std::endl;
+
+      glfwTerminate();
+      return 1;
+   }
+
+   /**
+    *    Initialize ImGui
+    */
+
+   ImGui::CreateContext();
+   ImGui::StyleColorsDark();
+
+   ImGuiStyle& Style = ImGui::GetStyle();
+   float MainScale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
+
+   Style.ScaleAllSizes(MainScale);
+   Style.FontScaleDpi = MainScale;
+
+   ImGui_ImplGlfw_InitForOpenGL(Window, true);
+   ImGui_ImplOpenGL3_Init("#version 330");
+
+   /**
+    *    Main loop
+    */
+
+   while (!glfwWindowShouldClose(Window))
    {
       glfwPollEvents();
 
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+      ImGui::NewFrame();
+
+      {
+         ImGui::Begin("Window");
+
+         ImGui::Text("Sonbrero");
+
+         ImGui::End();
+      }
+
+      ImGui::Render();
+
+      int WindowWidth, WindowHeight;
+      glfwGetFramebufferSize(Window, &WindowWidth, &WindowHeight);
+      glViewport(0, 0, WindowWidth, WindowHeight);
+      
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      glfwSwapBuffers(window);
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+      glfwSwapBuffers(Window);
    }
+   
+   glfwTerminate();
 
    return 0;
 }
