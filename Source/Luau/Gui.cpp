@@ -19,7 +19,7 @@ namespace Luau
  *    Luau function C++ implementations
  */
 
-static int Begin(lua_State* LuauState)
+int Gui::Begin(lua_State* LuauState)
 {
    const char* Name = luaL_checkstring(LuauState, 1);
    int IsOpen = luaL_optboolean(LuauState, 2, -1);
@@ -32,14 +32,14 @@ static int Begin(lua_State* LuauState)
    return 2;
 }
 
-static int End(lua_State* LuauState)
+int Gui::End(lua_State* LuauState)
 {
    ImGui::End();
 
    return 0;
 }
 
-static int Text(lua_State* LuauState)
+int Gui::Text(lua_State* LuauState)
 {
    const char* Text = luaL_checkstring(LuauState, 1);
 
@@ -56,7 +56,7 @@ static int Text(lua_State* LuauState)
    return 0;
 }
 
-static int SeparatorText(lua_State* LuauState)
+int Gui::SeparatorText(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
 
@@ -65,7 +65,7 @@ static int SeparatorText(lua_State* LuauState)
    return 0;
 }
 
-static int InputText(lua_State* LuauState)
+int Gui::InputText(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
    const char* Input = luaL_checkstring(LuauState, 2);
@@ -85,7 +85,7 @@ static int InputText(lua_State* LuauState)
    return 1;
 }
 
-static int Button(lua_State* LuauState)
+int Gui::Button(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
 
@@ -94,7 +94,7 @@ static int Button(lua_State* LuauState)
    return 1;
 }
 
-static int Checkbox(lua_State* LuauState)
+int Gui::Checkbox(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
    bool Checked = luaL_checkboolean(LuauState, 2);

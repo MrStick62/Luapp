@@ -1,0 +1,25 @@
+#pragma once
+
+
+class luaL_Reg;
+class lua_State;
+class GLFWwindow;
+
+namespace Luau
+{
+
+class Window
+{
+private:
+   static GLFWwindow* WindowRef;
+
+   static luaL_Reg Functions[];
+
+   static int GetSize(lua_State* LuauState);
+
+public:
+   static void LoadGlobal(lua_State* LuauState);
+   static void SetCurrentWindow(GLFWwindow* NewWindow);
+};
+
+}

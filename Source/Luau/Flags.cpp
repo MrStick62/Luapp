@@ -9,7 +9,7 @@
 namespace Luau
 {
 
-static int Unite(lua_State* LuauState)
+int Flags::Unite(lua_State* LuauState)
 {
    luaL_checktype(LuauState, 1, LUA_TTABLE);
 

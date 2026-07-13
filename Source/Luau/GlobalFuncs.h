@@ -11,6 +11,8 @@ class GlobalFuncs
 private:
    static luaL_Reg Functions[];
 
+   static int Require(lua_State* LuauState);
+
 public:
    static void LoadGlobal(lua_State* LuauState, const char* AppName);
 };

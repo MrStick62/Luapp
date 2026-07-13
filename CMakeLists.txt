@@ -32,8 +32,10 @@ target_sources(Luapp
       Source/App.cpp
 
       Source/Luau/Gui.cpp
+      Source/Luau/Vec2.cpp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp
+      Source/Luau/Window.cpp
       Source/Luau/GlobalFuncs.cpp
 )
 

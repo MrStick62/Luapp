@@ -3,6 +3,7 @@
 #include <filesystem>
 
 class lua_State;
+class GLFWwindow;
 
 class App 
 {
@@ -15,7 +16,7 @@ private:
    static const std::string DirectoryName;
 
 public:
-   App(const std::string& Name);
+   App(const std::string& Name, GLFWwindow* Window);
 
    void Main();
    void Tick(float DeltaTime);

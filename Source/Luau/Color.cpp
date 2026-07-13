@@ -14,7 +14,7 @@ namespace Luau
  *    Luau function C++ implementations
  */
 
-static int New(lua_State* LuauState)
+int Color::New(lua_State* LuauState)
 {
    float R = luaL_checknumber(LuauState, 1);
    float G = luaL_checknumber(LuauState, 2);

@@ -21,6 +21,8 @@ struct Color
 private:
    static luaL_Reg Functions[];
 
+   static int New(lua_State* LuauState);
+
 public:
    static void LoadGlobal(lua_State* LuauState);
 };

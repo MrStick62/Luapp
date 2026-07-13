@@ -14,13 +14,15 @@ constexpr int WINDOW_HEIGHT = 600;
 
 const char* APP_NAME = "Luapp";
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
-   if (!argc)
+   if (argc < 2)
    {
       std::cerr << "Application not specified!" << std::endl;
       return 1;
    }
+
+   std::string ProgramName(argv[1]);
 
    /**
     *    Initialize GLFW/WINDOW
@@ -80,7 +82,7 @@ int main(int argc, char** argv)
     *    Setup Luau app
     */
 
-   App LuauApp("TestApp");
+   App LuauApp(ProgramName, Window);
    LuauApp.Main();
 
    /**

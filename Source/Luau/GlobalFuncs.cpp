@@ -14,7 +14,7 @@
 namespace Luau
 {
 
-static int Require(lua_State* LuauState)
+int GlobalFuncs::Require(lua_State* LuauState)
 {
    /**
     *    Check if module exists
