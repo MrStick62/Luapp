@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "glad/gl.h"
-#include "GLFW/glfw3.h"
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 #include "App.h"
 
@@ -91,17 +91,13 @@ int main(int argc, char** argv)
    {
       glfwPollEvents();
 
+      LuauApp.Tick(0);
+
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
 
-      {
-         ImGui::Begin("Window");
-
-         ImGui::Text("Sonbrero");
-
-         ImGui::End();
-      }
+      LuauApp.OnGui(0);
 
       ImGui::Render();
 

@@ -9,6 +9,11 @@
 
 #include "FileHelp.h"
 
+#include "Luau/GlobalFuncs.h"
+#include "Luau/Gui.h"
+#include "Luau/Color.h"
+#include "Luau/Flags.h"
+
 const std::string App::EntryPointName = "Main.luau";
 const std::string App::DirectoryName = "Luapp";
 
@@ -20,6 +25,12 @@ App::App(const std::string& Name)
    // Initialize Luau
    LuauState = luaL_newstate();
    luaL_openlibs(LuauState);
+
+   Luau::GlobalFuncs::LoadGlobal(LuauState, Name.data());
+
+   Luau::Gui::LoadGlobal(LuauState);
+   Luau::Color::LoadGlobal(LuauState);
+   Luau::Flags::LoadGlobal(LuauState);
 
    std::string MainContent = FileHelp::ReadWholeFile((Path / EntryPointName).string());
 

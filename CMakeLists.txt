@@ -16,7 +16,7 @@ if(NOT result EQUAL 0)
    message(STATUS "Failed to create compile commands symlink")
 endif()
 
-# OpenGL setup
+# Library setup
 add_subdirectory(External/glfw)
 add_subdirectory(External/glad)
 add_subdirectory(External/imgui)
@@ -30,6 +30,11 @@ target_sources(Luapp
       Source/Main.cpp
       Source/FileHelp.cpp
       Source/App.cpp
+
+      Source/Luau/Gui.cpp
+      Source/Luau/Color.cpp
+      Source/Luau/Flags.cpp
+      Source/Luau/GlobalFuncs.cpp
 )
 
 target_link_libraries(Luapp 
