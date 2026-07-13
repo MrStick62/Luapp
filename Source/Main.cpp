@@ -7,16 +7,27 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "lua.h"
+#include "lualib.h"
+#include "luacode.h"
+
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
 
 const char* APP_NAME = "Luapp";
 
-int main()
+int main(int argc, char** argv)
 {
+   if (!argc)
+   {
+      std::cerr << "Application not specified!" << std::endl;
+      return 1;
+   }
+
    /**
     *    Initialize GLFW/WINDOW
     */
+
    glfwInit();
 
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -32,7 +43,6 @@ int main()
    if (!Window)
    {
       std::cerr << "Failed to create GLFW window!" << std::endl;
-
       glfwTerminate();
       return 1;
    }
@@ -48,7 +58,6 @@ int main()
    if (!Version)
    {
       std::cerr << "Failed to initialize GLAD!" << std::endl;
-
       glfwTerminate();
       return 1;
    }

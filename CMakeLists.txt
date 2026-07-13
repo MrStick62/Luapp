@@ -20,6 +20,7 @@ endif()
 add_subdirectory(External/glfw)
 add_subdirectory(External/glad)
 add_subdirectory(External/imgui)
+add_subdirectory(External/luau)
 
 # Executable setup
 add_executable(Luapp)
@@ -34,4 +35,8 @@ target_link_libraries(Luapp
       glfw
       glad
       imgui
+      Luau.Compiler
+      Luau.VM
+      Luau.Ast
+      Luau.Common
 )
