@@ -1,0 +1,51 @@
+#include "FileHelp.h"
+
+#include <fstream>
+#include <ios>
+#include <stdexcept>
+
+namespace FileHelp 
+{
+
+std::filesystem::path GetHomeDirectory()
+{   
+#ifdef _WIN32
+   if (const char* Home = std::getenv("USERPROFILE"))
+#else
+   if (const char* Home = std::getenv("HOME"))
+#endif
+   {
+      return Home;
+   }
+
+   return {};
+}
+
+std::string ReadWholeFile(const std::string& path)
+{
+   std::ifstream File(path, std::ios::binary);
+
+   if (!File)
+   {
+      std::stringstream ErrorMsg;
+      ErrorMsg << "Failed to open file " << path << "!";
+      throw std::runtime_error(ErrorMsg.str());
+   }
+
+   File.seekg(0, std::ios::end);
+   std::streamsize Size = File.tellg();
+   File.seekg(0, std::ios::beg);
+
+   std::string Content(Size, '\0');
+
+   if (!File.read(Content.data(), Size))
+   {
+      std::stringstream ErrorMsg;
+      ErrorMsg << "Failed to read file " << path << "!";
+      throw std::runtime_error(ErrorMsg.str());
+   }
+
+   return Content;
+}
+
+}

@@ -7,9 +7,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#include "lua.h"
-#include "lualib.h"
-#include "luacode.h"
+#include "App.h"
 
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
@@ -77,6 +75,13 @@ int main(int argc, char** argv)
 
    ImGui_ImplGlfw_InitForOpenGL(Window, true);
    ImGui_ImplOpenGL3_Init("#version 330");
+
+   /**
+    *    Setup Luau app
+    */
+
+   App LuauApp("TestApp");
+   LuauApp.Main();
 
    /**
     *    Main loop

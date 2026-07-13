@@ -28,6 +28,8 @@ add_executable(Luapp)
 target_sources(Luapp
    PRIVATE
       Source/Main.cpp
+      Source/FileHelp.cpp
+      Source/App.cpp
 )
 
 target_link_libraries(Luapp 
