@@ -1,7 +1,8 @@
 #include "FileHelp.h"
 
-#include <fstream>
 #include <ios>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 namespace FileHelp 
