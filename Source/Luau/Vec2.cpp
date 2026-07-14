@@ -12,7 +12,7 @@ namespace Luau
 int Vec2::New(lua_State* LuauState)
 {
    int X = luaL_checknumber(LuauState, 1);
-   int Y = luaL_checknumber(LuauState, 1);
+   int Y = luaL_checknumber(LuauState, 2);
 
    Vec2 Vec2(X, Y);
    Vec2.LuauPush(LuauState);

@@ -13,10 +13,36 @@ class Gui
 {
 private:
    static luaL_Reg Functions[];
-   static std::pair<std::string, int> WindowFlags[];
+
+   static int SetNextWindowSize(lua_State* LuauState);
+   static int SetNextWindowPos(lua_State* LuauState);
 
    static int Begin(lua_State* LuauState);
    static int End(lua_State* LuauState);
+
+   static int BeginChild(lua_State* LuauState);
+   static int EndChild(lua_State* LuauState);
+
+   static int BeginMainMenuBar(lua_State* LuauState);
+   static int EndMainMenuBar(lua_State* LuauState);
+
+   static int BeginMenuBar(lua_State* LuauState);
+   static int EndMenuBar(lua_State* LuauState);
+
+   static int BeginMenu(lua_State* LuauState);
+   static int EndMenu(lua_State* LuauState);
+
+   static int MenuItem(lua_State* LuauState);
+
+   static int BeginDisabled(lua_State* LuauState);
+   static int EndDisabled(lua_State* LuauState);
+
+   static int PushID(lua_State* LuauState);
+   static int PopID(lua_State* LuauState);
+
+   static int SameLine(lua_State* LuauState);
+   static int Spacing(lua_State* LuauState);
+   static int Separator(lua_State* LuauState);
 
    static int Text(lua_State* LuauState);
    static int SeparatorText(lua_State* LuauState);
@@ -24,6 +50,13 @@ private:
 
    static int Button(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
+
+   static int SliderFloat(lua_State* LuauState);
+   static int ColorEdit(lua_State* LuauState);
+
+   static std::pair<std::string, int> WindowFlags[];
+   static std::pair<std::string, int> ChildFlags[];
+   static std::pair<std::string, int> SliderFlags[];
 
 public:
    static void LoadGlobal(lua_State* LuauState);
