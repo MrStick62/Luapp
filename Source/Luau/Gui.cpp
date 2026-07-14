@@ -296,6 +296,150 @@ int Gui::ColorEdit(lua_State* LuauState)
    return 1;
 }
 
+int Gui::PlotLines(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+
+   luaL_checktype(LuauState, 2, LUA_TTABLE);
+
+   lua_Integer Length = lua_objlen(LuauState, 2);
+   float Values[Length];
+
+   for (int i = 1; i <= Length; i++)
+   {
+      lua_rawgeti(LuauState, 2, i);
+
+      Values[i - 1] = luaL_checknumber(LuauState, -1);
+
+      lua_pop(LuauState, 1);
+   }
+
+   const char* OverlayText = luaL_optstring(LuauState, 3, nullptr);
+
+   Vec2 Size;
+   Vec2::LuauOpt(LuauState, 4, &Size);
+
+   ImGui::PlotLines(Label, Values, Length, 0, OverlayText, FLT_MAX, FLT_MAX, ImVec2(Size.X, Size.Y));
+
+   return 0;
+}
+
+void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
+{
+   lua_createtable(LuauState, 0, 2);
+
+   lua_pushnumber(LuauState, Style.FontSizeBase);
+   lua_setfield(LuauState, -2, "FontSizeBase");
+
+   lua_createtable(LuauState, ImGuiCol_COUNT, 0);
+
+   for (int i = 1; i <= ImGuiCol_COUNT; i++)
+   {
+      ImVec4 ColorVec = Style.Colors[i - 1];
+      Color Color(ColorVec.x, ColorVec.y, ColorVec.z, ColorVec.w);
+      Color.LuauPush(LuauState);
+      lua_rawseti(LuauState, -2, i);
+   }
+
+   lua_setfield(LuauState, -2, "Colors");
+}
+
+ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
+{
+   luaL_checktype(LuauState, Index, LUA_TTABLE);
+
+   ImGuiStyle Style = ImGui::GetStyle();
+   
+   lua_getfield(LuauState, Index, "FontSizeBase");
+   Style.FontSizeBase = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "Colors");
+
+   for (int i = 1; i <= ImGuiCol_COUNT; i++)
+   {
+      lua_rawgeti(LuauState, -1, i);
+
+      Color Color = Color::LuauCheck(LuauState, -1);
+      Style.Colors[i - 1] = ImVec4(Color.R, Color.G, Color.B, Color.A);
+
+      lua_pop(LuauState, 1);
+   }
+
+   lua_pop(LuauState, 1);
+
+   return Style;
+}
+
+int Gui::GetCurrentStyle(lua_State* LuauState)
+{
+   PushStyle(LuauState, ImGui::GetStyle());
+
+   return 1;
+}
+
+int Gui::GetDarkStyle(lua_State* LuauState)
+{
+   ImGuiStyle Style;
+   ImGui::StyleColorsDark(&Style);
+   PushStyle(LuauState, Style);
+
+   return 1;
+}
+
+int Gui::GetLightStyle(lua_State* LuauState)
+{
+   ImGuiStyle Style;
+   ImGui::StyleColorsLight(&Style);
+   PushStyle(LuauState, Style);
+
+   return 1;
+}
+
+int Gui::GetClassicStyle(lua_State* LuauState)
+{
+   ImGuiStyle Style;
+   ImGui::StyleColorsClassic(&Style);
+   PushStyle(LuauState, Style);
+
+   return 1;
+}
+
+int Gui::SetStyle(lua_State* LuauState)
+{
+   ImGui::GetStyle() = CheckStyle(LuauState, 1);
+
+   return 0;
+}
+
+int Gui::PushStyleColor(lua_State* LuauState)
+{
+   ImGuiCol Index = luaL_checkinteger(LuauState, 1);
+   Color Color = Color::LuauCheck(LuauState, 2);
+
+   ImGui::PushStyleColor(Index, ImVec4(Color.R, Color.G, Color.B, Color.A));
+
+   return 0;
+}
+
+int Gui::PopStyleColor(lua_State* LuauState)
+{
+   int Count = luaL_optinteger(LuauState, 1, 1);
+
+   ImGui::PopStyleColor(Count);
+
+   return 0;
+}
+
+int Gui::GetStyleColorName(lua_State* LuauState)
+{
+   ImGuiCol Index = luaL_checkinteger(LuauState, 1) - 1;
+
+   lua_pushstring(LuauState, ImGui::GetStyleColorName(Index));
+
+   return 1;
+}
+
 /*
  *    Gui class
  */
@@ -340,6 +484,81 @@ luaL_Reg Gui::Functions[] = {
 
    { "SliderFloat", SliderFloat },
    { "ColorEdit", ColorEdit },
+
+   { "PlotLines", PlotLines },
+
+   { "GetCurrentStyle", GetCurrentStyle },
+   { "GetDarkStyle", GetDarkStyle },
+   { "GetLightStyle", GetLightStyle },
+   { "GetClassicStyle", GetClassicStyle },
+   { "SetStyle", SetStyle },
+
+   { "PushStyleColor", PushStyleColor },
+   { "PopStyleColor", PopStyleColor },
+   { "GetStyleColorName", GetStyleColorName },
+};
+
+std::pair<std::string, int> Gui::GuiColors[] = {
+   { "Text", ImGuiCol_Text },
+   { "TextDisabled", ImGuiCol_TextDisabled },
+   { "WindowBg", ImGuiCol_WindowBg },
+   { "ChildBg", ImGuiCol_ChildBg },
+   { "PopupBg", ImGuiCol_PopupBg },
+   { "Border", ImGuiCol_Border },
+   { "BorderShadow", ImGuiCol_BorderShadow },
+   { "FrameBg", ImGuiCol_FrameBg },
+   { "FrameBgHovered", ImGuiCol_FrameBgHovered },
+   { "FrameBgActive", ImGuiCol_FrameBgActive },
+   { "TitleBg", ImGuiCol_TitleBg },
+   { "TitleBgActive", ImGuiCol_TitleBgActive },
+   { "TitleBgCollapsed", ImGuiCol_TitleBgCollapsed },
+   { "MenuBarBg", ImGuiCol_MenuBarBg },
+   { "ScrollbarBg", ImGuiCol_ScrollbarBg },
+   { "ScrollbarGrab", ImGuiCol_ScrollbarGrab },
+   { "ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered },
+   { "ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive },
+   { "CheckMark", ImGuiCol_CheckMark },
+   { "SliderGrab", ImGuiCol_SliderGrab },
+   { "SliderGrabActive", ImGuiCol_SliderGrabActive },
+   { "Button", ImGuiCol_Button },
+   { "ButtonHovered", ImGuiCol_ButtonHovered },
+   { "ButtonActive", ImGuiCol_ButtonActive },
+   { "Header", ImGuiCol_Header },
+   { "HeaderHovered", ImGuiCol_HeaderHovered },
+   { "HeaderActive", ImGuiCol_HeaderActive },
+   { "Separator", ImGuiCol_Separator },
+   { "SeparatorHovered", ImGuiCol_SeparatorHovered },
+   { "SeparatorActive", ImGuiCol_SeparatorActive },
+   { "ResizeGrip", ImGuiCol_ResizeGrip },
+   { "ResizeGripHovered", ImGuiCol_ResizeGripHovered },
+   { "ResizeGripActive", ImGuiCol_ResizeGripActive },
+   { "InputTextCursor", ImGuiCol_InputTextCursor },
+   { "TabHovered", ImGuiCol_TabHovered },
+   { "Tab", ImGuiCol_Tab },
+   { "TabSelected", ImGuiCol_TabSelected },
+   { "TabSelectedOverline", ImGuiCol_TabSelectedOverline },
+   { "TabDimmed", ImGuiCol_TabDimmed },
+   { "TabDimmedSelected", ImGuiCol_TabDimmedSelected },
+   { "TabDimmedSelectedOverline", ImGuiCol_TabDimmedSelectedOverline },
+   { "PlotLines", ImGuiCol_PlotLines },
+   { "PlotLinesHovered", ImGuiCol_PlotLinesHovered },
+   { "PlotHistogram", ImGuiCol_PlotHistogram },
+   { "PlotHistogramHovered", ImGuiCol_PlotHistogramHovered },
+   { "TableHeaderBg", ImGuiCol_TableHeaderBg },
+   { "TableBorderStrong", ImGuiCol_TableBorderStrong },
+   { "TableBorderLight", ImGuiCol_TableBorderLight },
+   { "TableRowBg", ImGuiCol_TableRowBg },
+   { "TableRowBgAlt", ImGuiCol_TableRowBgAlt },
+   { "TextLink", ImGuiCol_TextLink },
+   { "TextSelectedBg", ImGuiCol_TextSelectedBg },
+   { "TreeLines", ImGuiCol_TreeLines },
+   { "DragDropTarget", ImGuiCol_DragDropTarget },
+   { "DragDropTargetBg", ImGuiCol_DragDropTargetBg },
+   { "UnsavedMarker", ImGuiCol_UnsavedMarker },
+   { "NavCursor", ImGuiCol_NavCursor },
+   { "NavWindowingHighlight", ImGuiCol_NavWindowingHighlight },
+   { "NavWindowingDimBg", ImGuiCol_NavWindowingDimBg },
+   { "ModalWindowDimBg", ImGuiCol_ModalWindowDimBg },
 };
 
 std::pair<std::string, int> Gui::WindowFlags[] = {
@@ -406,6 +625,17 @@ void Gui::LoadGlobal(lua_State* LuauState)
    }
    
    lua_setglobal(LuauState, "Gui");
+
+   // Gui colors table
+   lua_createtable(LuauState, 0, std::size(GuiColors));
+   
+   for (auto Index : GuiColors)
+   {
+      lua_pushinteger(LuauState, Index.second);
+      lua_setfield(LuauState, -2, Index.first.data());
+   }
+
+   lua_setglobal(LuauState, "GuiColors");
 
    // Gui window flags table
    lua_createtable(LuauState, 0, std::size(WindowFlags));

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -89,17 +90,21 @@ int main(int argc, char* argv[])
     *    Main loop
     */
 
+   float DeltaTime = 1.0f;
+
    while (!glfwWindowShouldClose(Window))
    {
+      auto FrameStart = std::chrono::steady_clock::now();
+
       glfwPollEvents();
 
-      LuauApp.Tick(0);
+      LuauApp.Tick(DeltaTime);
 
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
 
-      LuauApp.OnGui(0);
+      LuauApp.OnGui(DeltaTime);
 
       ImGui::Render();
 
@@ -113,6 +118,10 @@ int main(int argc, char* argv[])
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
       glfwSwapBuffers(Window);
+
+      auto FrameEnd = std::chrono::steady_clock::now();
+      std::chrono::duration<float> FrameTime = FrameEnd - FrameStart;
+      DeltaTime = FrameTime.count();
    }
 
    ImGui_ImplOpenGL3_Shutdown();

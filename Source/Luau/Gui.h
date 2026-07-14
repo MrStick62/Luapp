@@ -3,8 +3,9 @@
 #include <string>
 #include <utility>
 
-class lua_State;
 class luaL_Reg;
+class lua_State;
+class ImGuiStyle;
 
 namespace Luau
 {
@@ -53,6 +54,23 @@ private:
 
    static int SliderFloat(lua_State* LuauState);
    static int ColorEdit(lua_State* LuauState);
+
+   static int PlotLines(lua_State* LuauState);
+
+   static void PushStyle(lua_State* LuauState, const ImGuiStyle& Style);
+   static ImGuiStyle CheckStyle(lua_State* LuauState, int Index);
+
+   static int GetCurrentStyle(lua_State* LuauState);
+   static int GetDarkStyle(lua_State* LuauState);
+   static int GetLightStyle(lua_State* LuauState);
+   static int GetClassicStyle(lua_State* LuauState);
+   static int SetStyle(lua_State* LuauState);
+
+   static int PushStyleColor(lua_State* LuauState);
+   static int PopStyleColor(lua_State* LuauState);
+   static int GetStyleColorName(lua_State* LuauState);
+
+   static std::pair<std::string, int> GuiColors[];
 
    static std::pair<std::string, int> WindowFlags[];
    static std::pair<std::string, int> ChildFlags[];
