@@ -8,19 +8,19 @@ class GLFWwindow;
 class App 
 {
 private:
-   lua_State* LuauState;
+   static lua_State* LuauState;
 
-   std::filesystem::path Path;
+   static std::filesystem::path Path;
 
    static const std::string EntryPointName;
    static const std::string DirectoryName;
 
 public:
-   App(const std::string& Name, GLFWwindow* Window);
+   static void Init(const std::string& Name, GLFWwindow* Window);
 
-   void Main();
-   void Tick(float DeltaTime);
-   void OnGui(float DeltaTime);
+   static void Main();
+   static void Tick(float DeltaTime);
+   static void OnGui(float DeltaTime);
 
-   std::filesystem::path GetPath() const { return Path; };
+   static std::filesystem::path GetPath() { return Path; };
 };

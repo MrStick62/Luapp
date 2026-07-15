@@ -17,9 +17,10 @@ const char* APP_NAME = "Luapp";
 
 int main(int argc, char* argv[])
 {
+
    if (argc < 2)
    {
-      std::cerr << "Application not specified!" << std::endl;
+      std::cerr << "Path not specified!" << std::endl;
       return 1;
    }
 
@@ -83,8 +84,8 @@ int main(int argc, char* argv[])
     *    Setup Luau app
     */
 
-   App LuauApp(ProgramName, Window);
-   LuauApp.Main();
+   App::Init(ProgramName, Window);
+   App::Main();
 
    /**
     *    Main loop
@@ -98,13 +99,13 @@ int main(int argc, char* argv[])
 
       glfwPollEvents();
 
-      LuauApp.Tick(DeltaTime);
+      App::Tick(DeltaTime);
 
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
 
-      LuauApp.OnGui(DeltaTime);
+      App::OnGui(DeltaTime);
 
       ImGui::Render();
 

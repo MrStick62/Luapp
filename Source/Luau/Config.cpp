@@ -11,16 +11,14 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../App.h"
 #include "../FileHelp.h"
-
 
 namespace Luau
 {
 
 bool Config::IsLuauArray(lua_State* LuauState, int Index)
 {
-   Index = lua_gettop(LuauState) + Index + 1;
-
    lua_pushnil(LuauState);
    if (!lua_next(LuauState, Index))
       return false;
@@ -94,27 +92,17 @@ void Config::LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object)
 
 int Config::Save(lua_State* LuauState)
 {
-   lua_getglobal(LuauState, "Config");
-   luaL_checktype(LuauState, -1, LUA_TTABLE);
-
-   lua_getfield(LuauState, -1, "Data");
-   luaL_checktype(LuauState, -1, LUA_TTABLE);
-
-   nlohmann::json Object = ToJsonValue(LuauState, -1);
-
-   lua_getglobal(LuauState, "AppName");
-   const char* AppName = luaL_checkstring(LuauState, -1);
-   lua_pop(LuauState, 1);
-
-   std::filesystem::path Path = FileHelp::GetHomeDirectory() / "Documents" / "Luapp" / AppName / "Config.json";
-
+   luaL_checktype(LuauState, 1, LUA_TTABLE);
+   
+   nlohmann::json Object = ToJsonValue(LuauState, 1);
    std::string Content = Object.dump(2);
-   FileHelp::WriteWholeFile(Path.string(), Content);
 
-   lua_pop(LuauState, 2);
+   const char* Path = luaL_checkstring(LuauState, 2);
+   FileHelp::WriteWholeFile((App::GetPath() / Path).string(), Content);
 
    return 0;
 }
+
 
 void Config::PushJsonValue(lua_State* LuauState, const nlohmann::json& Value)
 {
@@ -168,44 +156,44 @@ void Config::JsonToLuau(lua_State* LuauState, const nlohmann::json& Object)
    }
 }
 
-void Config::PushData(lua_State* LuauState)
+void Config::PushData(lua_State* LuauState, const std::string& Path)
 {
-   
-   lua_getglobal(LuauState, "AppName");
-   const char* AppName = luaL_checkstring(LuauState, -1);
-   lua_pop(LuauState, 1);
-
-   std::filesystem::path Path = FileHelp::GetHomeDirectory() / "Documents" / "Luapp" / AppName / "Config.json";
-
-   if (!std::filesystem::exists(Path))
+   if (!std::filesystem::exists(App::GetPath() / Path))
    {
       lua_createtable(LuauState, 0, 0);
       return;
    }
 
-   std::ifstream ConfigFile(Path);
+   std::ifstream ConfigFile(App::GetPath() / Path);
    nlohmann::json Object = nlohmann::json::parse(ConfigFile);
 
    lua_createtable(LuauState, (Object.is_array()) ? Object.size() : 0, Object.is_object() ? Object.size() : 0);
    JsonToLuau(LuauState, Object);
 }
 
+int Config::Load(lua_State* LuauState)
+{
+   const char* Path = luaL_checkstring(LuauState, 1);
+
+   PushData(LuauState, Path);
+
+   return 1;
+}
+
 luaL_Reg Config::Functions[] = {
    { "Save", Save },
+   { "Load", Load },
 };
 
 void Config::LoadGlobal(lua_State* LuauState)
 {
-   lua_createtable(LuauState, 0, std::size(Functions) + 1);
+   lua_createtable(LuauState, 0, std::size(Functions));
    
    for (luaL_Reg Function : Functions)
    {
       lua_pushcfunction(LuauState, Function.func, Function.name);
       lua_setfield(LuauState, -2, Function.name);
    }
-
-   PushData(LuauState);
-   lua_setfield(LuauState, -2, "Data");
 
    lua_setglobal(LuauState, "Config");
 }

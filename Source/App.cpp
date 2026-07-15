@@ -1,4 +1,4 @@
-#include "App.h"
+ #include "App.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -19,20 +19,24 @@
 #include "Luau/Window.h"
 #include "Luau/GlobalFuncs.h"
 
+lua_State* App::LuauState;
+std::filesystem::path App::Path;
+
 const std::string App::EntryPointName = "Main.luau";
 const std::string App::DirectoryName = "Luapp";
 
-App::App(const std::string& Name, GLFWwindow* Window)
+void App::Init(const std::string& Name, GLFWwindow* Window)
 {
    // Set path
+#ifdef LOCAL_APP_PATH
+   Path = static_cast<std::filesystem::path>(Name).parent_path();
+#else
    Path = FileHelp::GetHomeDirectory() / "Documents" / DirectoryName / Name;
+#endif
 
    // Initialize Luau
    LuauState = luaL_newstate();
    luaL_openlibs(LuauState);
-
-   lua_pushstring(LuauState, Name.data());
-   lua_setglobal(LuauState, "AppName");
 
    Luau::GlobalFuncs::LoadGlobal(LuauState);
 
@@ -44,7 +48,11 @@ App::App(const std::string& Name, GLFWwindow* Window)
    Luau::Window::LoadGlobal(LuauState);
    Luau::Config::LoadGlobal(LuauState);
 
+#ifdef LOCAL_APP_PATH
+   std::string MainContent = FileHelp::ReadWholeFile(Name);
+#else
    std::string MainContent = FileHelp::ReadWholeFile((Path / EntryPointName).string());
+#endif
 
    size_t BytecodeSize;
    char* Bytecode = luau_compile(MainContent.data(), MainContent.length(), NULL, &BytecodeSize);

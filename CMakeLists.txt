@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 # Projet setup
 project(Luapp)
 
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 execute_process(
@@ -25,6 +26,10 @@ add_subdirectory(External/json)
 
 # Executable setup
 add_executable(Luapp)
+
+set_target_properties(Luapp PROPERTIES
+   RUNTIME_OUTPUT_DIRECTORY "bin"
+)
 
 target_sources(Luapp
    PRIVATE
@@ -51,4 +56,9 @@ target_link_libraries(Luapp
       Luau.Ast
       Luau.Common
       nlohmann_json 
+)
+
+target_compile_definitions(Luapp
+   PRIVATE
+      LOCAL_APP_PATH
 )

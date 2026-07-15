@@ -9,6 +9,7 @@
 #include <lualib.h>
 #include <luacode.h>
 
+#include "../App.h"
 #include "../FileHelp.h"
 
 namespace Luau
@@ -34,16 +35,10 @@ int GlobalFuncs::Require(lua_State* LuauState)
     *    Load module
     */
 
-   lua_getglobal(LuauState, "AppName");
-   const char* AppName = luaL_checkstring(LuauState, -1);
-   lua_pop(LuauState, 1);
-
    std::stringstream FileName;
    FileName << ModuleName << ".luau";
 
-   std::filesystem::path Path = FileHelp::GetHomeDirectory() / "Documents" / "Luapp" / AppName / FileName.str();
-
-   std::string Content = FileHelp::ReadWholeFile(Path.string());
+   std::string Content = FileHelp::ReadWholeFile((App::GetPath() / FileName.str()).string());
 
    size_t BytecodeSize = 0;
    char* Bytecode = luau_compile(Content.data(), Content.length(), NULL, &BytecodeSize);
