@@ -21,6 +21,7 @@ add_subdirectory(External/glfw)
 add_subdirectory(External/glad)
 add_subdirectory(External/imgui)
 add_subdirectory(External/luau)
+add_subdirectory(External/json)
 
 # Executable setup
 add_executable(Luapp)
@@ -36,6 +37,7 @@ target_sources(Luapp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp
       Source/Luau/Window.cpp
+      Source/Luau/Config.cpp
       Source/Luau/GlobalFuncs.cpp
 )
 
@@ -48,4 +50,5 @@ target_link_libraries(Luapp
       Luau.VM
       Luau.Ast
       Luau.Common
+      nlohmann_json 
 )

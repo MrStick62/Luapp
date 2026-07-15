@@ -2,9 +2,13 @@
 
 #include <filesystem>
 
-namespace FileHelp {
-   std::filesystem::path GetHomeDirectory();
+namespace FileHelp 
+{
 
-   std::string ReadWholeFile(const std::string& path);
+std::filesystem::path GetHomeDirectory();
+
+std::string ReadWholeFile(const std::string& Path);
+bool WriteWholeFile(const std::string& Path, const std::string& Content);
+
 }
 

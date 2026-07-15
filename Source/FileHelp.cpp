@@ -22,14 +22,14 @@ std::filesystem::path GetHomeDirectory()
    return {};
 }
 
-std::string ReadWholeFile(const std::string& path)
+std::string ReadWholeFile(const std::string& Path)
 {
-   std::ifstream File(path, std::ios::binary);
+   std::ifstream File(Path, std::ios::binary);
 
    if (!File)
    {
       std::stringstream ErrorMsg;
-      ErrorMsg << "Failed to open file " << path << "!";
+      ErrorMsg << "Failed to open file " << Path << "!";
       throw std::runtime_error(ErrorMsg.str());
    }
 
@@ -42,11 +42,27 @@ std::string ReadWholeFile(const std::string& path)
    if (!File.read(Content.data(), Size))
    {
       std::stringstream ErrorMsg;
-      ErrorMsg << "Failed to read file " << path << "!";
+      ErrorMsg << "Failed to read file " << Path << "!";
       throw std::runtime_error(ErrorMsg.str());
    }
 
    return Content;
+}
+
+bool WriteWholeFile(const std::string& Path, const std::string& Content)
+{
+   std::ofstream File(Path, std::ios::binary);
+
+   if (!File)
+   {
+      std::stringstream ErrorMsg;
+      ErrorMsg << "Failed to open file " << Path << "!";
+      throw std::runtime_error(ErrorMsg.str());
+   }
+
+   File << Content.data();
+
+   return true;
 }
 
 }

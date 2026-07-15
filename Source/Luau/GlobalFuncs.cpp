@@ -75,7 +75,7 @@ luaL_Reg GlobalFuncs::Functions[] = {
    { "require", Require },
 };
 
-void GlobalFuncs::LoadGlobal(lua_State* LuauState, const char* AppName)
+void GlobalFuncs::LoadGlobal(lua_State* LuauState)
 {
    lua_getfield(LuauState, LUA_REGISTRYINDEX, "_LOADED");
    bool IsLoadedNil = lua_isnil(LuauState, -1);
@@ -86,9 +86,6 @@ void GlobalFuncs::LoadGlobal(lua_State* LuauState, const char* AppName)
       lua_newtable(LuauState);
       lua_setfield(LuauState, LUA_REGISTRYINDEX, "_LOADED");
    }
-
-   lua_pushstring(LuauState, AppName);
-   lua_setglobal(LuauState, "AppName");
 
    for (luaL_Reg Function : Functions)
    {

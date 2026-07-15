@@ -11,6 +11,7 @@
 
 #include "FileHelp.h"
 
+#include "Luau/Config.h"
 #include "Luau/Gui.h"
 #include "Luau/Vec2.h"
 #include "Luau/Color.h"
@@ -30,7 +31,10 @@ App::App(const std::string& Name, GLFWwindow* Window)
    LuauState = luaL_newstate();
    luaL_openlibs(LuauState);
 
-   Luau::GlobalFuncs::LoadGlobal(LuauState, Name.data());
+   lua_pushstring(LuauState, Name.data());
+   lua_setglobal(LuauState, "AppName");
+
+   Luau::GlobalFuncs::LoadGlobal(LuauState);
 
    Luau::Gui::LoadGlobal(LuauState);
    Luau::Vec2::LoadGlobal(LuauState);
@@ -38,6 +42,7 @@ App::App(const std::string& Name, GLFWwindow* Window)
    Luau::Flags::LoadGlobal(LuauState);
    Luau::Window::SetCurrentWindow(Window);
    Luau::Window::LoadGlobal(LuauState);
+   Luau::Config::LoadGlobal(LuauState);
 
    std::string MainContent = FileHelp::ReadWholeFile((Path / EntryPointName).string());
 
