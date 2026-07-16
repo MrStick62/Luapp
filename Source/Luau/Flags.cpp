@@ -38,7 +38,7 @@ void Flags::LoadGlobal(lua_State* LuauState)
 {  
    lua_createtable(LuauState, 0, std::size(Functions));
 
-   for (luaL_Reg Function : Functions)
+   for (const luaL_Reg& Function : Functions)
    {
       lua_pushcfunction(LuauState, Function.func, Function.name);
       lua_setfield(LuauState, -2, Function.name);

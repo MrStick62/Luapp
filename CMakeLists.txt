@@ -38,6 +38,7 @@ target_sources(Luapp
       Source/App.cpp
 
       Source/Luau/Gui.cpp
+      Source/Luau/Web.cpp
       Source/Luau/Vec2.cpp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp

@@ -131,7 +131,7 @@ int Gui::MenuItem(lua_State* LuauState)
    bool Selected = luaL_optboolean(LuauState, 3, false);
    bool Enabled = luaL_optboolean(LuauState, 4, true);
 
-   lua_pushboolean(LuauState, ImGui::MenuItem(Label, Shortcut, Enabled));
+   lua_pushboolean(LuauState, ImGui::MenuItem(Label, Shortcut, Selected, Enabled));
 
    return 1;
 }
@@ -227,13 +227,13 @@ int Gui::InputText(lua_State* LuauState)
    char Buffer[1024];
    strcpy(Buffer, Input);
 
-   if (ImGui::InputText(Label, Buffer, strlen(Buffer)))
+   if (ImGui::InputText(Label, Buffer, 1024))
    {
       lua_pushstring(LuauState, Buffer);
    }
    else 
    {
-      lua_pushstring(LuauState, Input);
+      lua_pushstring(LuauState, Buffer);
    }
 
    return 1;
@@ -242,8 +242,10 @@ int Gui::InputText(lua_State* LuauState)
 int Gui::Button(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
+   Vec2 Size(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 2, &Size);
 
-   lua_pushboolean(LuauState, ImGui::Button(Label));
+   lua_pushboolean(LuauState, ImGui::Button(Label, ImVec2(Size.X, Size.Y)));
 
    return 1;
 }
@@ -618,7 +620,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
    // Gui table
    lua_createtable(LuauState, 0, std::size(Functions));
 
-   for (luaL_Reg Function : Functions)
+   for (const luaL_Reg& Function : Functions)
    {
       lua_pushcfunction(LuauState, Function.func, Function.name);
       lua_setfield(LuauState, -2, Function.name);

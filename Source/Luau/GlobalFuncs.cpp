@@ -82,7 +82,7 @@ void GlobalFuncs::LoadGlobal(lua_State* LuauState)
       lua_setfield(LuauState, LUA_REGISTRYINDEX, "_LOADED");
    }
 
-   for (luaL_Reg Function : Functions)
+   for (const luaL_Reg& Function : Functions)
    {
       lua_pushcfunction(LuauState, Function.func, Function.name);
       lua_setglobal(LuauState, Function.name);
