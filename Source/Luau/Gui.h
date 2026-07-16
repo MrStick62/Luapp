@@ -55,6 +55,7 @@ private:
    static int SeparatorText(lua_State* LuauState);
 
    static int InputText(lua_State* LuauState);
+   static int InputTextMultiline(lua_State* LuauState);
 
    static int Button(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);

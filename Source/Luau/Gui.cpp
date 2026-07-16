@@ -280,6 +280,26 @@ int Gui::InputText(lua_State* LuauState)
    return 2;
 }
 
+int Gui::InputTextMultiline(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   const char* Input = luaL_checkstring(LuauState, 2);
+
+   Vec2 Size(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 3, &Size);
+
+   ImGuiInputTextFlags Flags = luaL_optinteger(LuauState, 4, 0);
+
+   char Buffer[4096];
+   strcpy(Buffer, Input);
+
+   bool Modified = ImGui::InputTextMultiline(Label, Buffer, 4096, ImVec2(Size.X, Size.Y), Flags);
+   lua_pushstring(LuauState, Buffer);
+   lua_pushboolean(LuauState, Modified);
+
+   return 2;
+}
+
 int Gui::Button(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -533,7 +553,9 @@ luaL_Reg Gui::Functions[] = {
 
    { "Text", Text },
    { "SeparatorText", Text },
+
    { "InputText", InputText },
+   { "InputTextMultiline", InputTextMultiline },
 
    { "Button", Button },
    { "Checkbox", Checkbox },
