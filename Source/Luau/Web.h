@@ -15,6 +15,7 @@ private:
 
    static bool IsURL(const std::string& URL);
    static int OpenPage(lua_State* LuauState);
+   static int ConnectToSystem(lua_State* LuauState);
 
 public:
    static void LoadGlobal(lua_State* LuauState);
