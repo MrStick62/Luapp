@@ -34,6 +34,8 @@ private:
    static int EndMenu(lua_State* LuauState);
 
    static int MenuItem(lua_State* LuauState);
+   static int BeginPopup(lua_State* LuauState);
+   static int EndPopup(lua_State* LuauState);
 
    static int BeginDisabled(lua_State* LuauState);
    static int EndDisabled(lua_State* LuauState);
@@ -43,10 +45,15 @@ private:
 
    static int SameLine(lua_State* LuauState);
    static int Spacing(lua_State* LuauState);
+   static int Indent(lua_State* LuauState);
+   static int Unindent(lua_State* LuauState);
    static int Separator(lua_State* LuauState);
+
+   static int CollapsingHeader(lua_State* LuauState);
 
    static int Text(lua_State* LuauState);
    static int SeparatorText(lua_State* LuauState);
+
    static int InputText(lua_State* LuauState);
 
    static int Button(lua_State* LuauState);
@@ -70,11 +77,15 @@ private:
    static int PopStyleColor(lua_State* LuauState);
    static int GetStyleColorName(lua_State* LuauState);
 
+   static int ShowDemoWindow(lua_State* LuauState);
+
    static std::pair<std::string, int> GuiColors[];
 
    static std::pair<std::string, int> WindowFlags[];
    static std::pair<std::string, int> ChildFlags[];
    static std::pair<std::string, int> SliderFlags[];
+   static std::pair<std::string, int> InputTextFlags[];
+   static std::pair<std::string, int> TreeNodeFlags[];
 
 public:
    static void LoadGlobal(lua_State* LuauState);

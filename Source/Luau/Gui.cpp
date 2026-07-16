@@ -136,6 +136,23 @@ int Gui::MenuItem(lua_State* LuauState)
    return 1;
 }
 
+int Gui::BeginPopup(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   ImGuiWindowFlags Flags = luaL_optinteger(LuauState, 2, 0);
+
+   lua_pushboolean(LuauState, ImGui::BeginPopup(ID, Flags));
+
+   return 1;
+}
+
+int Gui::EndPopup(lua_State* LuauState)
+{
+   ImGui::EndPopup();
+
+   return 0;
+}
+
 int Gui::BeginDisabled(lua_State* LuauState)
 {
    ImGui::BeginDisabled();
@@ -186,11 +203,39 @@ int Gui::Spacing(lua_State* LuauState)
    return 0;
 }
 
+int Gui::Indent(lua_State* LuauState)
+{
+   float Width = luaL_optinteger(LuauState, 1, 0.0f);
+
+   ImGui::Indent(Width);
+
+   return 0;
+}
+
+int Gui::Unindent(lua_State* LuauState)
+{
+   float Width = luaL_optinteger(LuauState, 1, 0.0f);
+
+   ImGui::Unindent(Width);
+
+   return 0;
+}
+
 int Gui::Separator(lua_State* LuauState)
 {
    ImGui::Separator();
 
    return 0;
+}
+
+int Gui::CollapsingHeader(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   ImGuiTreeNodeFlags Flags = luaL_optinteger(LuauState, 2, 0);
+
+   lua_pushboolean(LuauState, ImGui::CollapsingHeader(Label, 0));
+
+   return 1;
 }
 
 int Gui::Text(lua_State* LuauState)
@@ -223,20 +268,16 @@ int Gui::InputText(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
    const char* Input = luaL_checkstring(LuauState, 2);
+   ImGuiInputTextFlags Flags = luaL_optinteger(LuauState, 3, 0);
 
    char Buffer[1024];
    strcpy(Buffer, Input);
 
-   if (ImGui::InputText(Label, Buffer, 1024))
-   {
-      lua_pushstring(LuauState, Buffer);
-   }
-   else 
-   {
-      lua_pushstring(LuauState, Buffer);
-   }
+   bool Modified = ImGui::InputText(Label, Buffer, 1024, Flags);
+   lua_pushstring(LuauState, Buffer);
+   lua_pushboolean(LuauState, Modified);
 
-   return 1;
+   return 2;
 }
 
 int Gui::Button(lua_State* LuauState)
@@ -442,6 +483,13 @@ int Gui::GetStyleColorName(lua_State* LuauState)
    return 1;
 }
 
+int Gui::ShowDemoWindow(lua_State* LuauState)
+{
+   ImGui::ShowDemoWindow();
+
+   return 0;
+}
+
 /*
  *    Gui class
  */
@@ -467,6 +515,9 @@ luaL_Reg Gui::Functions[] = {
 
    { "MenuItem", MenuItem },
 
+   { "BeginPopup", BeginPopup },
+   { "EndPopup", EndPopup },
+
    { "BeginDisabled", BeginDisabled },
    { "EndDisabled", EndDisabled },
 
@@ -475,7 +526,10 @@ luaL_Reg Gui::Functions[] = {
 
    { "SameLine", SameLine },
    { "Spacing", Spacing },
+   { "Indent", Indent },
    { "Separator", Separator },
+
+   { "CollapsingHeader", CollapsingHeader },
 
    { "Text", Text },
    { "SeparatorText", Text },
@@ -498,6 +552,8 @@ luaL_Reg Gui::Functions[] = {
    { "PushStyleColor", PushStyleColor },
    { "PopStyleColor", PopStyleColor },
    { "GetStyleColorName", GetStyleColorName },
+
+   { "ShowDemoWindow", ShowDemoWindow },
 };
 
 std::pair<std::string, int> Gui::GuiColors[] = {
@@ -615,6 +671,60 @@ std::pair<std::string, int> Gui::SliderFlags[] = {
    { "AlwaysClamp", ImGuiSliderFlags_AlwaysClamp },
 };
 
+std::pair<std::string, int> Gui::InputTextFlags[] = {
+   { "None", ImGuiInputTextFlags_None },
+   { "CharsDecimal", ImGuiInputTextFlags_CharsDecimal },
+   { "CharsHexadecimal", ImGuiInputTextFlags_CharsHexadecimal },
+   { "CharsScientific", ImGuiInputTextFlags_CharsScientific },
+   { "CharsUppercase", ImGuiInputTextFlags_CharsUppercase },
+   { "CharsNoBlank", ImGuiInputTextFlags_CharsNoBlank },
+   { "AllowTabInput", ImGuiInputTextFlags_AllowTabInput },
+   { "EnterReturnsTrue", ImGuiInputTextFlags_EnterReturnsTrue },
+   { "EscapeClearsAll", ImGuiInputTextFlags_EscapeClearsAll },
+   { "CtrlEnterForNewLine", ImGuiInputTextFlags_CtrlEnterForNewLine },
+   { "ReadOnly", ImGuiInputTextFlags_ReadOnly },
+   { "Password", ImGuiInputTextFlags_Password },
+   { "AlwaysOverwrite", ImGuiInputTextFlags_AlwaysOverwrite },
+   { "AutoSelectAll", ImGuiInputTextFlags_AutoSelectAll },
+   { "ParseEmptyRefVal", ImGuiInputTextFlags_ParseEmptyRefVal },
+   { "DisplayEmptyRefVal", ImGuiInputTextFlags_DisplayEmptyRefVal },
+   { "NoHorizontalScroll", ImGuiInputTextFlags_NoHorizontalScroll },
+   { "NoUndoRedo", ImGuiInputTextFlags_NoUndoRedo },
+   { "ElideLeft", ImGuiInputTextFlags_ElideLeft },
+   { "CallbackCompletion", ImGuiInputTextFlags_CallbackCompletion },
+   { "CallbackHistory", ImGuiInputTextFlags_CallbackHistory },
+   { "CallbackAlways", ImGuiInputTextFlags_CallbackAlways },
+   { "CallbackCharFilter", ImGuiInputTextFlags_CallbackCharFilter },
+   { "CallbackResize", ImGuiInputTextFlags_CallbackResize },
+   { "CallbackEdit", ImGuiInputTextFlags_CallbackEdit },
+   { "WordWrap", ImGuiInputTextFlags_WordWrap },
+};
+
+std::pair<std::string, int> Gui::TreeNodeFlags[] = {
+   { "None", ImGuiTreeNodeFlags_None },
+   { "Selected", ImGuiTreeNodeFlags_Selected },
+   { "Framed", ImGuiTreeNodeFlags_Framed },
+   { "AllowOverlap", ImGuiTreeNodeFlags_AllowOverlap },
+   { "NoTreePushOnOpen", ImGuiTreeNodeFlags_NoTreePushOnOpen },
+   { "NoAutoOpenOnLog", ImGuiTreeNodeFlags_NoAutoOpenOnLog },
+   { "DefaultOpen", ImGuiTreeNodeFlags_DefaultOpen },
+   { "OpenOnDoubleClick", ImGuiTreeNodeFlags_OpenOnDoubleClick },
+   { "OpenOnArrow", ImGuiTreeNodeFlags_OpenOnArrow },
+   { "Leaf", ImGuiTreeNodeFlags_Leaf },
+   { "Bullet", ImGuiTreeNodeFlags_Bullet },
+   { "FramePadding", ImGuiTreeNodeFlags_FramePadding },
+   { "SpanAvailWidth", ImGuiTreeNodeFlags_SpanAvailWidth },
+   { "SpanFullWidth", ImGuiTreeNodeFlags_SpanFullWidth },
+   { "SpanLabelWidth", ImGuiTreeNodeFlags_SpanLabelWidth },
+   { "SpanAllColumns", ImGuiTreeNodeFlags_SpanAllColumns },
+   { "LabelSpanAllColumns", ImGuiTreeNodeFlags_LabelSpanAllColumns },
+   { "NavLeftJumpsToParent", ImGuiTreeNodeFlags_NavLeftJumpsToParent },
+   { "CollapsingHeader", ImGuiTreeNodeFlags_CollapsingHeader },
+   { "DrawLinesNone", ImGuiTreeNodeFlags_DrawLinesNone },
+   { "DrawLinesFull", ImGuiTreeNodeFlags_DrawLinesFull },
+   { "DrawLinesToNodes", ImGuiTreeNodeFlags_DrawLinesToNodes },
+};
+
 void Gui::LoadGlobal(lua_State* LuauState)
 {
    // Gui table
@@ -671,6 +781,29 @@ void Gui::LoadGlobal(lua_State* LuauState)
    }
 
    lua_setglobal(LuauState, "GuiSliderFlags");
+   //
+   // Gui tree node flags table
+   lua_createtable(LuauState, 0, std::size(InputTextFlags));
+
+   for (auto Flag : InputTextFlags)
+   {
+      lua_pushinteger(LuauState, Flag.second);
+      lua_setfield(LuauState, -2, Flag.first.data());
+   }
+
+   lua_setglobal(LuauState, "GuiInputTextFlags");
+
+
+   // Gui tree node flags table
+   lua_createtable(LuauState, 0, std::size(TreeNodeFlags));
+
+   for (auto Flag : TreeNodeFlags)
+   {
+      lua_pushinteger(LuauState, Flag.second);
+      lua_setfield(LuauState, -2, Flag.first.data());
+   }
+
+   lua_setglobal(LuauState, "GuiTreeNodeFlags");
 }
 
 }
