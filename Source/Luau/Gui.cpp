@@ -547,6 +547,7 @@ luaL_Reg Gui::Functions[] = {
    { "SameLine", SameLine },
    { "Spacing", Spacing },
    { "Indent", Indent },
+   { "Unindent", Unindent },
    { "Separator", Separator },
 
    { "CollapsingHeader", CollapsingHeader },
