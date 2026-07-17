@@ -24,6 +24,13 @@ int Window::GetSize(lua_State* LuauState)
    return 1;
 }
 
+int Window::Close(lua_State* LuauState)
+{
+   glfwSetWindowShouldClose(WindowRef, true);
+
+   return 0;
+}
+
 GLFWwindow* Window::WindowRef = nullptr;
 
 void Window::SetCurrentWindow(GLFWwindow *NewWindow)
@@ -33,6 +40,7 @@ void Window::SetCurrentWindow(GLFWwindow *NewWindow)
 
 luaL_Reg Window::Functions[] = {
    { "GetSize", GetSize },
+   { "Close", Close },
 };
 
 void Window::LoadGlobal(lua_State *LuauState)

@@ -56,6 +56,8 @@ private:
 
    static int InputText(lua_State* LuauState);
    static int InputTextMultiline(lua_State* LuauState);
+   static int InputFloat(lua_State* LuauState);
+   static int InputInt(lua_State* LuauState);
 
    static int Button(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
@@ -79,6 +81,7 @@ private:
    static int GetStyleColorName(lua_State* LuauState);
 
    static int ShowDemoWindow(lua_State* LuauState);
+   static int ShowIDStackToolWindow(lua_State* LuauState);
 
    static std::pair<std::string, int> GuiColors[];
 

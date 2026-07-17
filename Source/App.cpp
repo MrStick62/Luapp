@@ -16,6 +16,7 @@
 #include "Luau/Vec2.h"
 #include "Luau/Color.h"
 #include "Luau/Flags.h"
+#include "Luau/Input.h"
 #include "Luau/Config.h"
 #include "Luau/Window.h"
 #include "Luau/GlobalFuncs.h"
@@ -46,6 +47,7 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
    Luau::Vec2::LoadGlobal(LuauState);
    Luau::Color::LoadGlobal(LuauState);
    Luau::Flags::LoadGlobal(LuauState);
+   Luau::Input::LoadGlobal(LuauState);
    Luau::Window::SetCurrentWindow(Window);
    Luau::Window::LoadGlobal(LuauState);
    Luau::Config::LoadGlobal(LuauState);
@@ -67,16 +69,20 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
 
 void App::Main()
 {
-   if (lua_getglobal(LuauState, "Main") == LUA_TNIL)
-      return;
+   lua_getglobal(LuauState, "Main");
+
+   if (!lua_isfunction(LuauState, -1))
+       return;
 
    lua_pcall(LuauState, 0, 0, 0);
 }
 
 void App::Tick(float DeltaTime)
 {
-   if (lua_getglobal(LuauState, "Tick") == LUA_TNIL)
-      return;
+   lua_getglobal(LuauState, "Tick");
+
+   if (!lua_isfunction(LuauState, -1))
+       return;
 
    lua_pushnumber(LuauState, DeltaTime);
    lua_pcall(LuauState, 1, 0, 0);
@@ -84,8 +90,10 @@ void App::Tick(float DeltaTime)
 
 void App::OnGui(float DeltaTime)
 {
-   if (lua_getglobal(LuauState, "OnGui") == LUA_TNIL)
-      return;
+   lua_getglobal(LuauState, "OnGui");
+
+   if (!lua_isfunction(LuauState, -1))
+       return;
 
    lua_pushnumber(LuauState, DeltaTime);
    lua_pcall(LuauState, 1, 0, 0);

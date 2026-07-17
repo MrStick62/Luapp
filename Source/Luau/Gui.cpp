@@ -169,9 +169,24 @@ int Gui::EndDisabled(lua_State* LuauState)
 
 int Gui::PushID(lua_State* LuauState)
 {
-   const char* ID = luaL_checkstring(LuauState, 1);
+   if (lua_isnumber(LuauState, 1))
+   {
+      int ID = luaL_checkinteger(LuauState, 1);
 
-   ImGui::PushID(ID);
+      ImGui::PushID(ID);
+
+      return 0;
+   }
+   else if (lua_isstring(LuauState, 1))
+   {
+      const char* ID = luaL_checkstring(LuauState, 1);
+      
+      ImGui::PushID(ID);
+
+      return 0;
+   }
+
+   luaL_error(LuauState, "Unexpected ID type. Expected string or integer");
 
    return 0;
 }
@@ -298,6 +313,36 @@ int Gui::InputTextMultiline(lua_State* LuauState)
    lua_pushboolean(LuauState, Modified);
 
    return 2;
+}
+
+int Gui::InputFloat(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   float Value = luaL_checknumber(LuauState, 2);
+   int Precision = luaL_optinteger(LuauState, 3, 2);
+   ImGuiInputTextFlags Flags = luaL_optinteger(LuauState, 4, 0);
+
+   std::stringstream Format;
+   Format << "%." << Precision << "f";
+
+   bool Modified = ImGui::InputFloat(Label, &Value, 0.0f, 0.0f, Format.str().data(), Flags);
+   lua_pushnumber(LuauState, Value);
+   lua_pushboolean(LuauState, Modified);
+
+   return 2;
+}
+
+int Gui::InputInt(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   int Value = luaL_checkinteger(LuauState, 2);
+   ImGuiInputTextFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   bool Modified = ImGui::InputInt(Label, &Value, 0, 0, Flags);
+   lua_pushinteger(LuauState, Value);
+   lua_pushboolean(LuauState, Modified);
+
+   return 2;  
 }
 
 int Gui::Button(lua_State* LuauState)
@@ -505,9 +550,24 @@ int Gui::GetStyleColorName(lua_State* LuauState)
 
 int Gui::ShowDemoWindow(lua_State* LuauState)
 {
-   ImGui::ShowDemoWindow();
+   int IsOpen = luaL_optboolean(LuauState, 1, -1);
 
-   return 0;
+   ImGui::ShowDemoWindow(IsOpen == -1 ? nullptr : (bool*)&IsOpen);
+
+   lua_pushboolean(LuauState, IsOpen == -1 ? true : IsOpen);
+
+   return 1;
+}
+
+int Gui::ShowIDStackToolWindow(lua_State* LuauState)
+{
+   int IsOpen = luaL_optboolean(LuauState, 1, -1);
+
+   ImGui::ShowIDStackToolWindow(IsOpen == -1 ? nullptr : (bool*)&IsOpen);
+
+   lua_pushboolean(LuauState, IsOpen == -1 ? true : IsOpen);
+
+   return 1;
 }
 
 /*
@@ -557,6 +617,8 @@ luaL_Reg Gui::Functions[] = {
 
    { "InputText", InputText },
    { "InputTextMultiline", InputTextMultiline },
+   { "InputFloat", InputFloat },
+   { "InputInt", InputInt },
 
    { "Button", Button },
    { "Checkbox", Checkbox },
@@ -577,6 +639,7 @@ luaL_Reg Gui::Functions[] = {
    { "GetStyleColorName", GetStyleColorName },
 
    { "ShowDemoWindow", ShowDemoWindow },
+   { "ShowIDStackToolWindow", ShowIDStackToolWindow },
 };
 
 std::pair<std::string, int> Gui::GuiColors[] = {

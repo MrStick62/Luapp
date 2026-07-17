@@ -42,6 +42,7 @@ target_sources(Luapp
       Source/Luau/Vec2.cpp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp
+      Source/Luau/Input.cpp
       Source/Luau/Window.cpp
       Source/Luau/Config.cpp
       Source/Luau/GlobalFuncs.cpp
