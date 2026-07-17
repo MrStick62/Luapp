@@ -12,6 +12,8 @@
 
 #include <imgui/imgui.h>
 
+#include <glad/gl.h>
+
 #include "Vec2.h"
 #include "Color.h"
 
@@ -243,6 +245,13 @@ int Gui::Separator(lua_State* LuauState)
    return 0;
 }
 
+int Gui::Bullet(lua_State* LuauState)
+{
+   ImGui::Bullet();
+
+   return 0;
+}
+
 int Gui::CollapsingHeader(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -253,9 +262,28 @@ int Gui::CollapsingHeader(lua_State* LuauState)
    return 1;
 }
 
+int Gui::Image(lua_State* LuauState)
+{
+   GLuint ImageID = luaL_checkinteger(LuauState, 1);
+
+   int Width, Height;
+   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
+   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &Height);
+
+   ImGui::Image(ImageID, ImVec2(Width, Height));
+
+   return 0;
+}
+
 int Gui::Text(lua_State* LuauState)
 {
    const char* Text = luaL_checkstring(LuauState, 1);
+   bool Wrapped = luaL_optboolean(LuauState, 3, false);
+
+   if (Wrapped)
+   {
+      ImGui::PushTextWrapPos();
+   }
 
    Color Color;
    if (Color::LuauOpt(LuauState, 2, &Color))
@@ -265,6 +293,11 @@ int Gui::Text(lua_State* LuauState)
    else 
    {
       ImGui::Text("%s", Text);
+   }
+
+   if (Wrapped)
+   {
+      ImGui::PopTextWrapPos();
    }
 
    return 0;
@@ -277,6 +310,25 @@ int Gui::SeparatorText(lua_State* LuauState)
    ImGui::SeparatorText(Label);
 
    return 0;
+}
+
+int Gui::TextLink(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+
+   lua_pushboolean(LuauState, ImGui::TextLink(Label));
+
+   return 1;
+}
+
+int Gui::TextLinkOpenURL(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   const char* URL = luaL_checkstring(LuauState, 2);
+
+   lua_pushboolean(LuauState, ImGui::TextLinkOpenURL(Label, URL));
+
+   return 1;
 }
 
 int Gui::InputText(lua_State* LuauState)
@@ -356,6 +408,15 @@ int Gui::Button(lua_State* LuauState)
    return 1;
 }
 
+int Gui::SmallButton(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+
+   lua_pushboolean(LuauState, ImGui::SmallButton(Label));
+
+   return 1;
+}
+
 int Gui::Checkbox(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -366,6 +427,33 @@ int Gui::Checkbox(lua_State* LuauState)
    lua_pushboolean(LuauState, Checked);
 
    return 1;
+}
+
+int Gui::Combo(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   int CurrentItem = luaL_checkinteger(LuauState, 2);
+
+   luaL_checktype(LuauState, 3, LUA_TTABLE);
+   int Length = lua_objlen(LuauState, 3);
+   const char* Items[Length];
+
+   for (int i = 1; i <= Length; i++)
+   {
+      lua_rawgeti(LuauState, 3, i);
+
+      Items[i - 1] = luaL_checkstring(LuauState, -1);
+
+      lua_pop(LuauState, 1);
+   }
+
+   int MaxPopupItems = luaL_optinteger(LuauState, 4, -1);
+
+   bool Modified = ImGui::Combo(Label, &CurrentItem, Items, Length, MaxPopupItems);
+   lua_pushinteger(LuauState, CurrentItem);
+   lua_pushboolean(LuauState, Modified);
+
+   return 2;
 }
 
 int Gui::SliderFloat(lua_State* LuauState)
@@ -609,11 +697,15 @@ luaL_Reg Gui::Functions[] = {
    { "Indent", Indent },
    { "Unindent", Unindent },
    { "Separator", Separator },
+   { "Bullet", Bullet },
 
    { "CollapsingHeader", CollapsingHeader },
 
    { "Text", Text },
    { "SeparatorText", Text },
+
+   { "TextLink", TextLink },
+   { "TextLinkOpenURL", TextLinkOpenURL },
 
    { "InputText", InputText },
    { "InputTextMultiline", InputTextMultiline },
@@ -621,7 +713,10 @@ luaL_Reg Gui::Functions[] = {
    { "InputInt", InputInt },
 
    { "Button", Button },
+   { "SmallButton", SmallButton },
    { "Checkbox", Checkbox },
+
+   { "Combo", Combo },
 
    { "SliderFloat", SliderFloat },
    { "ColorEdit", ColorEdit },

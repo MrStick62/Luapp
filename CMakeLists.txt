@@ -60,7 +60,13 @@ target_link_libraries(Luapp
       nlohmann_json 
 )
 
+target_include_directories(Luapp
+   PRIVATE
+      External/stb
+)
+
 target_compile_definitions(Luapp
    PRIVATE
       LOCAL_APP_PATH
 )
+

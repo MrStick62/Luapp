@@ -17,6 +17,7 @@
 #include "Luau/Color.h"
 #include "Luau/Flags.h"
 #include "Luau/Input.h"
+#include "Luau/Image.h"
 #include "Luau/Config.h"
 #include "Luau/Window.h"
 #include "Luau/GlobalFuncs.h"
@@ -48,6 +49,7 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
    Luau::Color::LoadGlobal(LuauState);
    Luau::Flags::LoadGlobal(LuauState);
    Luau::Input::LoadGlobal(LuauState);
+   Luau::Image::LoadGlobal(LuauState);
    Luau::Window::SetCurrentWindow(Window);
    Luau::Window::LoadGlobal(LuauState);
    Luau::Config::LoadGlobal(LuauState);

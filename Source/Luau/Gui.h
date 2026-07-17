@@ -48,11 +48,17 @@ private:
    static int Indent(lua_State* LuauState);
    static int Unindent(lua_State* LuauState);
    static int Separator(lua_State* LuauState);
+   static int Bullet(lua_State* LuauState);
 
    static int CollapsingHeader(lua_State* LuauState);
 
+   static int Image(lua_State* LuauState);
+
    static int Text(lua_State* LuauState);
    static int SeparatorText(lua_State* LuauState);
+
+   static int TextLink(lua_State* LuauState);
+   static int TextLinkOpenURL(lua_State* LuauState);
 
    static int InputText(lua_State* LuauState);
    static int InputTextMultiline(lua_State* LuauState);
@@ -60,7 +66,10 @@ private:
    static int InputInt(lua_State* LuauState);
 
    static int Button(lua_State* LuauState);
+   static int SmallButton(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
+
+   static int Combo(lua_State* LuauState);
 
    static int SliderFloat(lua_State* LuauState);
    static int ColorEdit(lua_State* LuauState);
