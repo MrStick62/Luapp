@@ -264,13 +264,30 @@ int Gui::CollapsingHeader(lua_State* LuauState)
 
 int Gui::Image(lua_State* LuauState)
 {
-   GLuint ImageID = luaL_checkinteger(LuauState, 1);
+   luaL_checktype(LuauState, 1, LUA_TTABLE);
 
-   int Width, Height;
-   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
-   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &Height);
+   lua_getfield(LuauState, 1, "ID");
+   GLuint ImageID = luaL_checkinteger(LuauState, -1);
+   lua_pop(LuauState, 1);
 
-   ImGui::Image(ImageID, ImVec2(Width, Height));
+   Vec2 Size;
+   if (!Vec2::LuauOpt(LuauState, 2, &Size))
+   {
+      int Width, Height;
+      glBindTexture(GL_TEXTURE_2D, ImageID);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &Height);
+
+      Size = Vec2(Width, Height);
+   }
+
+   Vec2 UV1(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 3, &UV1);
+
+   Vec2 UV2(1.0f, 1.0f);
+   Vec2::LuauOpt(LuauState, 4, &UV2);
+
+   ImGui::Image(ImageID, ImVec2(Size.X, Size.Y), ImVec2(UV1.X, UV1.Y), ImVec2(UV2.X, UV2.Y));
 
    return 0;
 }
@@ -700,6 +717,8 @@ luaL_Reg Gui::Functions[] = {
    { "Bullet", Bullet },
 
    { "CollapsingHeader", CollapsingHeader },
+
+   { "Image", Image },
 
    { "Text", Text },
    { "SeparatorText", Text },
