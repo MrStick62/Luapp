@@ -69,5 +69,6 @@ target_include_directories(Luapp
 target_compile_definitions(Luapp
    PRIVATE
       LOCAL_APP_PATH
+      
 )
 

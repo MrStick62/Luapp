@@ -5,6 +5,14 @@
 #include <sstream>
 #include <stdexcept>
 
+#ifdef _WIN32
+#include <windows.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
+#elif __linux__
+
+#endif
+
 namespace FileHelp 
 {
 
@@ -19,6 +27,41 @@ std::filesystem::path GetHomeDirectory()
       return Home;
    }
 
+   return {};
+}
+
+std::filesystem::path GetProjectDirectory()
+{
+   return GetExecutableDirectory().parent_path().parent_path();
+}
+
+std::filesystem::path GetExecutableDirectory()
+{
+#ifdef _WIN32
+   wchar_t Buffer[1024];
+   if (GetModuleFileNameW(nullptr, Buffer, 1024))
+   {
+      return std::filesystem::path(Buffer).parent_path();
+   }
+#elif __APPLE__
+   uint32_t Size = 0;
+   _NSGetExecutablePath(nullptr, &Size);
+   std::vector<char> Buffer(Size);
+   if (!_NSGetExecutablePath(Buffer.data(), &Size))
+   {
+      char OutPath[1024];
+      if (realpath(Buffer.data(), OutPath))
+      {
+         return std::filesystem::path(OutPath).parent_path();
+      }
+   }
+#elif __linux__
+   char Buffer[1024];
+   if (readlink("/proc/self/exe", Buffer, sizeof(Buffer)))
+   {
+      return std::filesystem::path(Buffer).parent_path();
+   }
+#endif
    return {};
 }
 

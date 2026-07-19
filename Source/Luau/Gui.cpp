@@ -17,6 +17,8 @@
 #include "Vec2.h"
 #include "Color.h"
 
+#include "../FileHelp.h"
+
 namespace Luau
 {
 
@@ -40,6 +42,24 @@ int Gui::SetNextWindowPos(lua_State* LuauState)
    ImGui::SetNextWindowPos(ImVec2(Pos.X, Pos.Y), ImGuiCond_Always);
 
    return 0;
+}
+
+int Gui::GetWindowSize(lua_State* LuauState)
+{
+   ImVec2 ImSize = ImGui::GetWindowSize();
+
+   Vec2(ImSize.x, ImSize.y).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Gui::GetWindowPos(lua_State* LuauState)
+{
+   ImVec2 ImPos = ImGui::GetWindowPos();
+
+   Vec2(ImPos.x, ImPos.y).LuauPush(LuauState);
+
+   return 1;
 }
 
 int Gui::Begin(lua_State* LuauState)
@@ -136,6 +156,42 @@ int Gui::MenuItem(lua_State* LuauState)
    lua_pushboolean(LuauState, ImGui::MenuItem(Label, Shortcut, Selected, Enabled));
 
    return 1;
+}
+
+int Gui::BeginTabBar(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   ImGuiTabBarFlags Flags = luaL_optinteger(LuauState, 2, 0);
+
+   lua_pushboolean(LuauState, ImGui::BeginTabBar(ID, Flags));
+
+   return 1;
+}
+
+int Gui::EndTabBar(lua_State* LuauState)
+{
+   ImGui::EndTabBar();
+
+   return 0;
+}
+
+int Gui::BeginTabItem(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   int IsOpen = luaL_optboolean(LuauState, 2, -1);
+   ImGuiTabItemFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   lua_pushboolean(LuauState, ImGui::BeginTabItem(Label, IsOpen == -1 ? nullptr : (bool*)&IsOpen, Flags));
+   lua_pushboolean(LuauState, IsOpen == -1 ? true : IsOpen);
+
+   return 2;
+}
+
+int Gui::EndTabItem(lua_State* LuauState)
+{
+   ImGui::EndTabItem();
+
+   return 0;
 }
 
 int Gui::BeginPopup(lua_State* LuauState)
@@ -292,6 +348,80 @@ int Gui::Image(lua_State* LuauState)
    return 0;
 }
 
+int Gui::ImageWithBg(lua_State* LuauState)
+{
+   luaL_checktype(LuauState, 1, LUA_TTABLE);
+
+   lua_getfield(LuauState, 1, "ID");
+   GLuint ImageID = luaL_checkinteger(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   Vec2 Size;
+   if (!Vec2::LuauOpt(LuauState, 2, &Size))
+   {
+      int Width, Height;
+      glBindTexture(GL_TEXTURE_2D, ImageID);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &Height);
+
+      Size = Vec2(Width, Height);
+   }
+
+   Vec2 UV1(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 3, &UV1);
+
+   Vec2 UV2(1.0f, 1.0f);
+   Vec2::LuauOpt(LuauState, 4, &UV2);
+
+   Color Background(0.0f, 0.0f, 0.0f, 0.0f);
+   Color::LuauOpt(LuauState, 5, &Background);
+
+   Color Tint(1.0f, 1.0f, 1.0f, 1.0f);
+   Color::LuauOpt(LuauState, 6, &Tint);
+
+   ImGui::ImageWithBg(ImageID, ImVec2(Size.X, Size.Y), ImVec2(UV1.X, UV1.Y), ImVec2(UV2.X, UV2.Y), ImVec4(Background.R, Background.G, Background.B, Background.A), ImVec4(Tint.R, Tint.G, Tint.B, Tint.A));
+
+   return 0;
+}
+
+int Gui::ImageButton(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+
+   luaL_checktype(LuauState, 2, LUA_TTABLE);
+
+   lua_getfield(LuauState, 2, "ID");
+   GLuint ImageID = luaL_checkinteger(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   Vec2 Size;
+   if (!Vec2::LuauOpt(LuauState, 3, &Size))
+   {
+      int Width, Height;
+      glBindTexture(GL_TEXTURE_2D, ImageID);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &Height);
+
+      Size = Vec2(Width, Height);
+   }
+
+   Vec2 UV1(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 4, &UV1);
+
+   Vec2 UV2(1.0f, 1.0f);
+   Vec2::LuauOpt(LuauState, 5, &UV2);
+
+   Color Background(0.0f, 0.0f, 0.0f, 0.0f);
+   Color::LuauOpt(LuauState, 6, &Background);
+
+   Color Tint(1.0f, 1.0f, 1.0f, 1.0f);
+   Color::LuauOpt(LuauState, 7, &Tint);
+
+   ImGui::ImageButton(ID, ImageID, ImVec2(Size.X, Size.Y), ImVec2(UV1.X, UV1.Y), ImVec2(UV2.X, UV2.Y), ImVec4(Background.R, Background.G, Background.B, Background.A), ImVec4(Tint.R, Tint.G, Tint.B, Tint.A));
+
+   return 1;
+}
+
 int Gui::Text(lua_State* LuauState)
 {
    const char* Text = luaL_checkstring(LuauState, 1);
@@ -442,6 +572,20 @@ int Gui::Checkbox(lua_State* LuauState)
    ImGui::Checkbox(Label, &Checked);
 
    lua_pushboolean(LuauState, Checked);
+
+   return 1;
+}
+
+int Gui::Selectable(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   bool Selected = luaL_checkboolean(LuauState, 2);
+   ImGuiSelectableFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   Vec2 Size(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 4, &Size);
+
+   lua_pushboolean(LuauState, ImGui::Selectable(Label, Selected, Flags, ImVec2(Size.X, Size.Y)));
 
    return 1;
 }
@@ -675,6 +819,15 @@ int Gui::ShowIDStackToolWindow(lua_State* LuauState)
    return 1;
 }
 
+int Gui::ShowFontSelector(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+
+   ImGui::ShowFontSelector(Label);
+
+   return 0;
+}
+
 /*
  *    Gui class
  */
@@ -682,6 +835,9 @@ int Gui::ShowIDStackToolWindow(lua_State* LuauState)
 luaL_Reg Gui::Functions[] = {
    { "SetNextWindowSize", SetNextWindowSize },
    { "SetNextWindowPos", SetNextWindowPos },
+
+   { "GetWindowSize", GetWindowSize },
+   { "GetWindowPos", GetWindowPos },
 
    { "Begin", Begin },
    { "End", End },
@@ -699,6 +855,12 @@ luaL_Reg Gui::Functions[] = {
    { "EndMenu", EndMenu },
 
    { "MenuItem", MenuItem },
+
+   { "BeginTabBar", BeginTabBar },
+   { "EndTabBar", EndTabBar },
+
+   { "BeginTabItem", BeginTabItem },
+   { "EndTabItem", EndTabItem },
 
    { "BeginPopup", BeginPopup },
    { "EndPopup", EndPopup },
@@ -719,6 +881,8 @@ luaL_Reg Gui::Functions[] = {
    { "CollapsingHeader", CollapsingHeader },
 
    { "Image", Image },
+   { "ImageWithBg", ImageWithBg },
+   { "ImageButton", ImageButton },
 
    { "Text", Text },
    { "SeparatorText", Text },
@@ -734,6 +898,8 @@ luaL_Reg Gui::Functions[] = {
    { "Button", Button },
    { "SmallButton", SmallButton },
    { "Checkbox", Checkbox },
+
+   { "Selectable", Selectable },
 
    { "Combo", Combo },
 
@@ -754,6 +920,7 @@ luaL_Reg Gui::Functions[] = {
 
    { "ShowDemoWindow", ShowDemoWindow },
    { "ShowIDStackToolWindow", ShowIDStackToolWindow },
+   { "ShowFontSelector", ShowFontSelector },
 };
 
 std::pair<std::string, int> Gui::GuiColors[] = {
@@ -925,6 +1092,44 @@ std::pair<std::string, int> Gui::TreeNodeFlags[] = {
    { "DrawLinesToNodes", ImGuiTreeNodeFlags_DrawLinesToNodes },
 };
 
+std::pair<std::string, int> Gui::SelectableFlags[] = {
+   { "None", ImGuiSelectableFlags_None },
+   { "NoAutoClosePopups", ImGuiSelectableFlags_NoAutoClosePopups },
+   { "SpanAllColumns", ImGuiSelectableFlags_SpanAllColumns },
+   { "AllowDoubleClick", ImGuiSelectableFlags_AllowDoubleClick },
+   { "Disabled", ImGuiSelectableFlags_Disabled },
+   { "AllowOverlap", ImGuiSelectableFlags_AllowOverlap },
+   { "Highlight", ImGuiSelectableFlags_Highlight },
+   { "SelectOnNav", ImGuiSelectableFlags_SelectOnNav },
+};
+
+std::pair<std::string, int> Gui::TabBarFlags[] = {
+   { "None", ImGuiTabBarFlags_None },
+   { "Reorderable", ImGuiTabBarFlags_Reorderable },
+   { "AutoSelectNewTabs", ImGuiTabBarFlags_AutoSelectNewTabs },
+   { "TabListPopupButton", ImGuiTabBarFlags_TabListPopupButton },
+   { "NoCloseWithMiddleMouseButton", ImGuiTabBarFlags_NoCloseWithMiddleMouseButton },
+   { "NoTabListScrollingButtons", ImGuiTabBarFlags_NoTabListScrollingButtons },
+   { "NoTooltip", ImGuiTabBarFlags_NoTooltip },
+   { "DrawSelectedOverline", ImGuiTabBarFlags_DrawSelectedOverline },
+   { "FittingPolicyMixed", ImGuiTabBarFlags_FittingPolicyMixed },
+   { "FittingPolicyShrink", ImGuiTabBarFlags_FittingPolicyShrink },
+   { "FittingPolicyScroll", ImGuiTabBarFlags_FittingPolicyScroll },
+};
+
+std::pair<std::string, int> Gui::TabItemFlags[] = {
+   { "None", ImGuiTabItemFlags_None },
+   { "UnsavedDocument", ImGuiTabItemFlags_UnsavedDocument },
+   { "SetSelected", ImGuiTabItemFlags_SetSelected },
+   { "NoCloseWithMiddleMouseButton", ImGuiTabItemFlags_NoCloseWithMiddleMouseButton },
+   { "NoPushId", ImGuiTabItemFlags_NoPushId },
+   { "NoTooltip", ImGuiTabItemFlags_NoTooltip },
+   { "NoReorder", ImGuiTabItemFlags_NoReorder },
+   { "Leading", ImGuiTabItemFlags_Leading },
+   { "Trailing", ImGuiTabItemFlags_Trailing },
+   { "NoAssumedClosure", ImGuiTabItemFlags_NoAssumedClosure },
+};
+
 void Gui::LoadGlobal(lua_State* LuauState)
 {
    // Gui table
@@ -993,7 +1198,6 @@ void Gui::LoadGlobal(lua_State* LuauState)
 
    lua_setglobal(LuauState, "GuiInputTextFlags");
 
-
    // Gui tree node flags table
    lua_createtable(LuauState, 0, std::size(TreeNodeFlags));
 
@@ -1004,6 +1208,48 @@ void Gui::LoadGlobal(lua_State* LuauState)
    }
 
    lua_setglobal(LuauState, "GuiTreeNodeFlags");
+   
+   // Gui selectable flags table
+   lua_createtable(LuauState, 0, std::size(SelectableFlags));
+
+   for (auto Flag : SelectableFlags)
+   {
+      lua_pushinteger(LuauState, Flag.second);
+      lua_setfield(LuauState, -2, Flag.first.data());
+   }
+
+   lua_setglobal(LuauState, "GuiSelectableFlags");
+
+   // Gui tab bar flags
+   lua_createtable(LuauState, 0, std::size(TabBarFlags));
+
+   for (auto Flag : TabBarFlags)
+   {
+      lua_pushinteger(LuauState, Flag.second);
+      lua_setfield(LuauState, -2, Flag.first.data());
+   }
+
+   lua_setglobal(LuauState, "GuiTabBarFlags");
+
+   // Gui tab item flags
+   lua_createtable(LuauState, 0, std::size(TabItemFlags));
+
+   for (auto Flag : TabItemFlags)
+   {
+      lua_pushinteger(LuauState, Flag.second);
+      lua_setfield(LuauState, -2, Flag.first.data());
+   }
+
+   lua_setglobal(LuauState, "TabItemFlags");
+
+   // Load fonts
+   ImGuiIO& IO = ImGui::GetIO();
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Cousine-Regular.ttf").string().data());
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "DroidSans.ttf").string().data());
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Karla-Regular.ttf").string().data());
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "ProggyClean.ttf").string().data());
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "ProggyTiny.ttf").string().data());
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Roboto-Medium.ttf").string().data());
 }
 
 }

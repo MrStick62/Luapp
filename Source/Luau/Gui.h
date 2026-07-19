@@ -18,6 +18,9 @@ private:
    static int SetNextWindowSize(lua_State* LuauState);
    static int SetNextWindowPos(lua_State* LuauState);
 
+   static int GetWindowSize(lua_State* LuauState);
+   static int GetWindowPos(lua_State* LuauState);
+
    static int Begin(lua_State* LuauState);
    static int End(lua_State* LuauState);
 
@@ -34,6 +37,13 @@ private:
    static int EndMenu(lua_State* LuauState);
 
    static int MenuItem(lua_State* LuauState);
+
+   static int BeginTabBar(lua_State* LuauState);
+   static int EndTabBar(lua_State* LuauState);
+
+   static int BeginTabItem(lua_State* LuauState);
+   static int EndTabItem(lua_State* LuauState);
+
    static int BeginPopup(lua_State* LuauState);
    static int EndPopup(lua_State* LuauState);
 
@@ -53,6 +63,8 @@ private:
    static int CollapsingHeader(lua_State* LuauState);
 
    static int Image(lua_State* LuauState);
+   static int ImageWithBg(lua_State* LuauState);
+   static int ImageButton(lua_State* LuauState);
 
    static int Text(lua_State* LuauState);
    static int SeparatorText(lua_State* LuauState);
@@ -68,6 +80,8 @@ private:
    static int Button(lua_State* LuauState);
    static int SmallButton(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
+
+   static int Selectable(lua_State* LuauState);
 
    static int Combo(lua_State* LuauState);
 
@@ -91,6 +105,7 @@ private:
 
    static int ShowDemoWindow(lua_State* LuauState);
    static int ShowIDStackToolWindow(lua_State* LuauState);
+   static int ShowFontSelector(lua_State* LuauState);
 
    static std::pair<std::string, int> GuiColors[];
 
@@ -99,6 +114,9 @@ private:
    static std::pair<std::string, int> SliderFlags[];
    static std::pair<std::string, int> InputTextFlags[];
    static std::pair<std::string, int> TreeNodeFlags[];
+   static std::pair<std::string, int> SelectableFlags[];
+   static std::pair<std::string, int> TabBarFlags[];
+   static std::pair<std::string, int> TabItemFlags[];
 
 public:
    static void LoadGlobal(lua_State* LuauState);
