@@ -8,6 +8,8 @@
 
 #include <imgui/imgui.h>
 
+#include "LuauHelp.h"
+
 namespace Luau
 {
 
@@ -248,49 +250,10 @@ std::pair<std::string, int> Input::Flags[] = {
 
 void Input::LoadGlobal(lua_State *LuauState)
 {
-   // Init functions
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Input");
-
-   // Init key enum list
-   lua_createtable(LuauState, 0, std::size(Keys));
-
-   for (const auto& Key : Keys)
-   {
-      lua_pushinteger(LuauState, Key.second);
-      lua_setfield(LuauState, -2, Key.first.data());
-   }
-
-   lua_setglobal(LuauState, "InputKey");
-   
-   // Init mod enum list
-   lua_createtable(LuauState, 0, std::size(Mods));
-
-   for (const auto& Key : Mods)
-   {
-      lua_pushinteger(LuauState, Key.second);
-      lua_setfield(LuauState, -2, Key.first.data());
-   }
-
-   lua_setglobal(LuauState, "InputMod");
-
-   // Init input flags
-   lua_createtable(LuauState, 0, std::size(Flags));
-
-   for (const auto& Flag : Flags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "InputFlags");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Input");
+   LuauHelp::SetupEnumGlobal(LuauState, Keys, std::size(Keys), "InputKey");
+   LuauHelp::SetupEnumGlobal(LuauState, Mods, std::size(Mods), "InputMod");
+   LuauHelp::SetupEnumGlobal(LuauState, Flags, std::size(Flags), "InputFlags");
 }
 
 }

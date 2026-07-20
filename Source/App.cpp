@@ -14,10 +14,12 @@
 #include "Luau/Gui.h"
 #include "Luau/Web.h"
 #include "Luau/Vec2.h"
+#include "Luau/Font.h"
 #include "Luau/Color.h"
 #include "Luau/Flags.h"
 #include "Luau/Input.h"
 #include "Luau/Image.h"
+#include "Luau/Icons.h"
 #include "Luau/Config.h"
 #include "Luau/Window.h"
 #include "Luau/GlobalFuncs.h"
@@ -42,14 +44,16 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
    luaL_openlibs(LuauState);
 
    Luau::GlobalFuncs::LoadGlobal(LuauState);
-
+   
    Luau::Web::LoadGlobal(LuauState);
    Luau::Gui::LoadGlobal(LuauState);
    Luau::Vec2::LoadGlobal(LuauState);
+   Luau::Font::LoadGlobal(LuauState);
    Luau::Color::LoadGlobal(LuauState);
    Luau::Flags::LoadGlobal(LuauState);
    Luau::Input::LoadGlobal(LuauState);
    Luau::Image::LoadGlobal(LuauState);
+   Luau::Icons::LoadGlobal(LuauState);
    Luau::Window::SetCurrentWindow(Window);
    Luau::Window::LoadGlobal(LuauState);
    Luau::Config::LoadGlobal(LuauState);

@@ -6,6 +6,8 @@
 #include <lualib.h>
 #include <luacode.h>
 
+#include "LuauHelp.h"
+
 namespace Luau
 {
 
@@ -63,15 +65,7 @@ luaL_Reg Vec2::Functions[] = {
 
 void Vec2::LoadGlobal(lua_State *LuauState)
 {
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Vec2");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Vec2");
 }
 
 }

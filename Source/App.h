@@ -22,5 +22,5 @@ public:
    static void Tick(float DeltaTime);
    static void OnGui(float DeltaTime);
 
-   static std::filesystem::path GetPath() { return Path; };
+   static std::filesystem::path GetPath() { return Path; }
 };

@@ -47,6 +47,21 @@ private:
    static int BeginPopup(lua_State* LuauState);
    static int EndPopup(lua_State* LuauState);
 
+   static int BeginTable(lua_State* LuauState);
+   static int EndTable(lua_State* LuauState);
+
+   static int TableNextRow(lua_State* LuauState);
+   static int TableNextColumn(lua_State* LuauState);
+   static int TableSetColumnIndex(lua_State* LuauState);
+
+   static int TableSetupColumn(lua_State* LuauState);
+   static int TableSetupScrollFreeze(lua_State* LuauState);
+   static int TableHeader(lua_State* LuauState);
+   static int TableHeadersRow(lua_State* LuauState);
+   static int TableAngledHeadersRow(lua_State* LuauState);
+
+   static int TableSetBgColor(lua_State* LuauState);
+
    static int BeginDisabled(lua_State* LuauState);
    static int EndDisabled(lua_State* LuauState);
 
@@ -93,6 +108,9 @@ private:
    static void PushStyle(lua_State* LuauState, const ImGuiStyle& Style);
    static ImGuiStyle CheckStyle(lua_State* LuauState, int Index);
 
+   static int GetCurrentFont(lua_State* LuauState);
+   static int SetFont(lua_State* LuauState);
+
    static int GetCurrentStyle(lua_State* LuauState);
    static int GetDarkStyle(lua_State* LuauState);
    static int GetLightStyle(lua_State* LuauState);
@@ -108,15 +126,24 @@ private:
    static int ShowFontSelector(lua_State* LuauState);
 
    static std::pair<std::string, int> GuiColors[];
+   static std::pair<std::string, int> TableBgTargets[];
 
    static std::pair<std::string, int> WindowFlags[];
    static std::pair<std::string, int> ChildFlags[];
+
    static std::pair<std::string, int> SliderFlags[];
    static std::pair<std::string, int> InputTextFlags[];
+
    static std::pair<std::string, int> TreeNodeFlags[];
+
    static std::pair<std::string, int> SelectableFlags[];
+
    static std::pair<std::string, int> TabBarFlags[];
    static std::pair<std::string, int> TabItemFlags[];
+
+   static std::pair<std::string, int> TableFlags[];
+   static std::pair<std::string, int> TableColumnFlags[];
+   static std::pair<std::string, int> TableRowFlags[];
 
 public:
    static void LoadGlobal(lua_State* LuauState);

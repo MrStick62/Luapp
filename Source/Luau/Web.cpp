@@ -13,6 +13,8 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+#include "LuauHelp.h"
+
 #ifdef _WIN32
 #define OPEN_WEB_COMMAND "start"
 #elif __APPLE__
@@ -82,15 +84,7 @@ luaL_Reg Web::Functions[] = {
 
 void Web::LoadGlobal(lua_State *LuauState)
 {
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Web");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Web");
 }
 
 }

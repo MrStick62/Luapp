@@ -15,7 +15,9 @@
 #include <glad/gl.h>
 
 #include "Vec2.h"
+#include "Font.h"
 #include "Color.h"
+#include "LuauHelp.h"
 
 #include "../FileHelp.h"
 
@@ -207,6 +209,110 @@ int Gui::BeginPopup(lua_State* LuauState)
 int Gui::EndPopup(lua_State* LuauState)
 {
    ImGui::EndPopup();
+
+   return 0;
+}
+
+int Gui::BeginTable(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   int Columns = luaL_checkinteger(LuauState, 2);
+   ImGuiTableFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   Vec2 OuterSize(0.0f, 0.0f);
+   Vec2::LuauOpt(LuauState, 4, &OuterSize);
+
+   float InnerWidth = luaL_optnumber(LuauState, 5, 0.0f);
+
+   lua_pushboolean(LuauState, ImGui::BeginTable(ID, Columns, Flags, ImVec2(OuterSize.X, OuterSize.Y), InnerWidth));
+
+   return 1;
+}
+
+int Gui::EndTable(lua_State* LuauState)
+{
+   ImGui::EndTable();
+
+   return 0;
+}
+
+int Gui::TableNextRow(lua_State* LuauState)
+{
+   ImGuiTableRowFlags Flags = luaL_optinteger(LuauState, 1, 0);
+   float MinRowHeight = luaL_optnumber(LuauState, 2, 0.0f);
+
+   ImGui::TableNextRow(Flags, MinRowHeight);
+
+   return 0;
+}
+
+int Gui::TableNextColumn(lua_State* LuauState)
+{
+   lua_pushboolean(LuauState, ImGui::TableNextColumn());
+
+   return 1;
+}
+
+int Gui::TableSetColumnIndex(lua_State* LuauState)
+{
+   int Index = luaL_checkinteger(LuauState, 1);
+
+   lua_pushboolean(LuauState, ImGui::TableSetColumnIndex(Index));
+
+   return 1;
+}
+
+int Gui::TableSetupColumn(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   ImGuiTableColumnFlags Flags = luaL_optinteger(LuauState, 2, 0);
+   float InitWidth = luaL_optnumber(LuauState, 3, 0.0f);
+
+   ImGui::TableSetupColumn(Label, Flags, InitWidth);
+
+   return 0;
+}
+
+int Gui::TableSetupScrollFreeze(lua_State* LuauState)
+{
+   int Columns = luaL_checkinteger(LuauState, 1);
+   int Rows = luaL_checkinteger(LuauState, 2);
+
+   ImGui::TableSetupScrollFreeze(Columns, Rows);
+
+   return 0;
+}
+
+int Gui::TableHeader(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+
+   ImGui::TableHeader(Label);
+
+   return 0;
+}
+
+int Gui::TableHeadersRow(lua_State* LuauState)
+{
+   ImGui::TableHeadersRow();
+
+   return 0;
+}
+
+int Gui::TableAngledHeadersRow(lua_State* LuauState)
+{
+   ImGui::TableAngledHeadersRow();
+
+   return 0;
+}
+
+int Gui::TableSetBgColor(lua_State* LuauState)
+{
+   ImGuiTableBgTarget Target = luaL_checkinteger(LuauState, 1);
+   Color Color = Color::LuauCheck(LuauState, 2);
+   int Column = luaL_optinteger(LuauState, 3, -1);
+
+   ImGui::TableSetBgColor(Target, ImGui::GetColorU32(ImVec4(Color.R, Color.G, Color.B, Color.A)), Column);
 
    return 0;
 }
@@ -593,7 +699,7 @@ int Gui::Selectable(lua_State* LuauState)
 int Gui::Combo(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
-   int CurrentItem = luaL_checkinteger(LuauState, 2);
+   int CurrentItem = luaL_checkinteger(LuauState, 2) - 1;
 
    luaL_checktype(LuauState, 3, LUA_TTABLE);
    int Length = lua_objlen(LuauState, 3);
@@ -611,7 +717,7 @@ int Gui::Combo(lua_State* LuauState)
    int MaxPopupItems = luaL_optinteger(LuauState, 4, -1);
 
    bool Modified = ImGui::Combo(Label, &CurrentItem, Items, Length, MaxPopupItems);
-   lua_pushinteger(LuauState, CurrentItem);
+   lua_pushinteger(LuauState, CurrentItem + 1);
    lua_pushboolean(LuauState, Modified);
 
    return 2;
@@ -726,6 +832,25 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    lua_pop(LuauState, 1);
 
    return Style;
+}
+
+int Gui::GetCurrentFont(lua_State* LuauState)
+{
+   ImFont* Current = ImGui::GetFont();
+
+   Font::LuauPush(LuauState, Current);
+
+   return 1;
+}
+
+int Gui::SetFont(lua_State* LuauState)
+{
+   ImFont* NewFont = Font::LuauCheck(LuauState, 1);
+
+   ImGuiIO& IO = ImGui::GetIO();
+   IO.FontDefault = NewFont;
+
+   return 0;
 }
 
 int Gui::GetCurrentStyle(lua_State* LuauState)
@@ -865,6 +990,21 @@ luaL_Reg Gui::Functions[] = {
    { "BeginPopup", BeginPopup },
    { "EndPopup", EndPopup },
 
+   { "BeginTable", BeginTable },
+   { "EndTable", EndTable },
+
+   { "TableNextRow", TableNextRow },
+   { "TableNextColumn", TableNextColumn },
+   { "TableSetColumnIndex", TableSetColumnIndex },
+
+   { "TableSetupColumn", TableSetupColumn },
+   { "TableSetupScrollFreeze", TableSetupScrollFreeze },
+   { "TableHeader", TableHeader },
+   { "TableHeadersRow", TableHeadersRow },
+   { "TableAngledHeadersRow", TableAngledHeadersRow },
+
+   { "TableSetBgColor", TableSetBgColor },
+
    { "BeginDisabled", BeginDisabled },
    { "EndDisabled", EndDisabled },
 
@@ -907,6 +1047,9 @@ luaL_Reg Gui::Functions[] = {
    { "ColorEdit", ColorEdit },
 
    { "PlotLines", PlotLines },
+
+   { "GetCurrentFont", GetCurrentFont },
+   { "SetFont", SetFont },
 
    { "GetCurrentStyle", GetCurrentStyle },
    { "GetDarkStyle", GetDarkStyle },
@@ -984,6 +1127,13 @@ std::pair<std::string, int> Gui::GuiColors[] = {
    { "NavWindowingHighlight", ImGuiCol_NavWindowingHighlight },
    { "NavWindowingDimBg", ImGuiCol_NavWindowingDimBg },
    { "ModalWindowDimBg", ImGuiCol_ModalWindowDimBg },
+};
+
+std::pair<std::string, int> Gui::TableBgTargets[] = {
+   { "None", ImGuiTableBgTarget_None },
+   { "RowBg1", ImGuiTableBgTarget_RowBg0 },
+   { "RowBg2", ImGuiTableBgTarget_RowBg1 },
+   { "CellBg", ImGuiTableBgTarget_CellBg },
 };
 
 std::pair<std::string, int> Gui::WindowFlags[] = {
@@ -1130,126 +1280,93 @@ std::pair<std::string, int> Gui::TabItemFlags[] = {
    { "NoAssumedClosure", ImGuiTabItemFlags_NoAssumedClosure },
 };
 
+std::pair<std::string, int> Gui::TableFlags[] = {
+   { "None", ImGuiTableFlags_None },
+   { "Resizable", ImGuiTableFlags_Resizable },
+   { "Reorderable", ImGuiTableFlags_Reorderable },
+   { "Hideable", ImGuiTableFlags_Hideable },
+   { "Sortable", ImGuiTableFlags_Sortable },
+   { "NoSavedSettings", ImGuiTableFlags_NoSavedSettings },
+   { "ContextMenuInBody", ImGuiTableFlags_ContextMenuInBody },
+   { "RowBg", ImGuiTableFlags_RowBg },
+   { "BordersInnerH", ImGuiTableFlags_BordersInnerH },
+   { "BordersOuterH", ImGuiTableFlags_BordersOuterH },
+   { "BordersInnerV", ImGuiTableFlags_BordersInnerV },
+   { "BordersOuterV", ImGuiTableFlags_BordersOuterV },
+   { "BordersH", ImGuiTableFlags_BordersH },
+   { "BordersV", ImGuiTableFlags_BordersV },
+   { "BordersInner", ImGuiTableFlags_BordersInner },
+   { "BordersOuter", ImGuiTableFlags_BordersOuter },
+   { "Borders", ImGuiTableFlags_Borders },
+   { "NoBordersInBody", ImGuiTableFlags_NoBordersInBody },
+   { "NoBordersInBodyUntilResize", ImGuiTableFlags_NoBordersInBodyUntilResize },
+   { "SizingFixedFit", ImGuiTableFlags_SizingFixedFit },
+   { "SizingFixedSame", ImGuiTableFlags_SizingFixedSame },
+   { "SizingStretchProp", ImGuiTableFlags_SizingStretchProp },
+   { "SizingStretchSame", ImGuiTableFlags_SizingStretchSame },
+   { "NoHostExtendX", ImGuiTableFlags_NoHostExtendX },
+   { "NoHostExtendY", ImGuiTableFlags_NoHostExtendY },
+   { "NoKeepColumnsVisible", ImGuiTableFlags_NoKeepColumnsVisible },
+   { "PreciseWidths", ImGuiTableFlags_PreciseWidths },
+   { "NoClip", ImGuiTableFlags_NoClip },
+   { "PadOuterX", ImGuiTableFlags_PadOuterX },
+   { "NoPadOuterX", ImGuiTableFlags_NoPadOuterX },
+   { "NoPadInnerX", ImGuiTableFlags_NoPadInnerX },
+   { "ScrollX", ImGuiTableFlags_ScrollX },
+   { "ScrollY", ImGuiTableFlags_ScrollY },
+   { "SortMulti", ImGuiTableFlags_SortMulti },
+   { "SortTristate", ImGuiTableFlags_SortTristate },
+   { "HighlightHoveredColumn", ImGuiTableFlags_HighlightHoveredColumn },
+};
+std::pair<std::string, int> Gui::TableColumnFlags[] = {
+   { "None", ImGuiTableColumnFlags_None },
+   { "Disabled", ImGuiTableColumnFlags_Disabled },
+   { "DefaultHide", ImGuiTableColumnFlags_DefaultHide },
+   { "DefaultSort", ImGuiTableColumnFlags_DefaultSort },
+   { "WidthStretch", ImGuiTableColumnFlags_WidthStretch },
+   { "WidthFixed", ImGuiTableColumnFlags_WidthFixed },
+   { "NoResize", ImGuiTableColumnFlags_NoResize },
+   { "NoReorder", ImGuiTableColumnFlags_NoReorder },
+   { "NoHide", ImGuiTableColumnFlags_NoHide },
+   { "NoClip", ImGuiTableColumnFlags_NoClip },
+   { "NoSort", ImGuiTableColumnFlags_NoSort },
+   { "NoSortAscending", ImGuiTableColumnFlags_NoSortAscending },
+   { "NoSortDescending", ImGuiTableColumnFlags_NoSortDescending },
+   { "NoHeaderLabel", ImGuiTableColumnFlags_NoHeaderLabel },
+   { "NoHeaderWidth", ImGuiTableColumnFlags_NoHeaderWidth },
+   { "PreferSortAscending", ImGuiTableColumnFlags_PreferSortAscending },
+   { "PreferSortDescending", ImGuiTableColumnFlags_PreferSortDescending },
+   { "IndentEnable", ImGuiTableColumnFlags_IndentEnable },
+   { "IndentDisable", ImGuiTableColumnFlags_IndentDisable },
+   { "AngledHeader", ImGuiTableColumnFlags_AngledHeader },
+   { "IsEnabled", ImGuiTableColumnFlags_IsEnabled },
+   { "IsVisible", ImGuiTableColumnFlags_IsVisible },
+   { "IsSorted", ImGuiTableColumnFlags_IsSorted },
+   { "IsHovered", ImGuiTableColumnFlags_IsHovered },
+};
+
+std::pair<std::string, int> Gui::TableRowFlags[] = {
+   { "None", ImGuiTableRowFlags_None },
+   { "Headers", ImGuiTableRowFlags_Headers },
+};
+
 void Gui::LoadGlobal(lua_State* LuauState)
 {
-   // Gui table
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-   
-   lua_setglobal(LuauState, "Gui");
-
-   // Gui colors table
-   lua_createtable(LuauState, 0, std::size(GuiColors));
-   
-   for (auto Index : GuiColors)
-   {
-      lua_pushinteger(LuauState, Index.second);
-      lua_setfield(LuauState, -2, Index.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiColors");
-
-   // Gui window flags table
-   lua_createtable(LuauState, 0, std::size(WindowFlags));
-
-   for (auto Flag : WindowFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiWindowFlags");
-
-   // Gui window flags table
-   lua_createtable(LuauState, 0, std::size(ChildFlags));
-
-   for (auto Flag : ChildFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiChildFlags");
-
-   // Gui slider flags table
-   lua_createtable(LuauState, 0, std::size(SliderFlags));
-
-   for (auto Flag : SliderFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiSliderFlags");
-   //
-   // Gui tree node flags table
-   lua_createtable(LuauState, 0, std::size(InputTextFlags));
-
-   for (auto Flag : InputTextFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiInputTextFlags");
-
-   // Gui tree node flags table
-   lua_createtable(LuauState, 0, std::size(TreeNodeFlags));
-
-   for (auto Flag : TreeNodeFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiTreeNodeFlags");
-   
-   // Gui selectable flags table
-   lua_createtable(LuauState, 0, std::size(SelectableFlags));
-
-   for (auto Flag : SelectableFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiSelectableFlags");
-
-   // Gui tab bar flags
-   lua_createtable(LuauState, 0, std::size(TabBarFlags));
-
-   for (auto Flag : TabBarFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "GuiTabBarFlags");
-
-   // Gui tab item flags
-   lua_createtable(LuauState, 0, std::size(TabItemFlags));
-
-   for (auto Flag : TabItemFlags)
-   {
-      lua_pushinteger(LuauState, Flag.second);
-      lua_setfield(LuauState, -2, Flag.first.data());
-   }
-
-   lua_setglobal(LuauState, "TabItemFlags");
-
-   // Load fonts
-   ImGuiIO& IO = ImGui::GetIO();
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Cousine-Regular.ttf").string().data());
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "DroidSans.ttf").string().data());
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Karla-Regular.ttf").string().data());
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "ProggyClean.ttf").string().data());
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "ProggyTiny.ttf").string().data());
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Roboto-Medium.ttf").string().data());
+   // Setup globals
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Gui");
+   LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors");
+   LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
+   LuauHelp::SetupEnumGlobal(LuauState, WindowFlags, std::size(WindowFlags), "GuiWindowFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, ChildFlags, std::size(ChildFlags), "GuiChildFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, SliderFlags, std::size(SliderFlags), "GuiSliderFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, InputTextFlags, std::size(InputTextFlags), "GuiInputTextFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TreeNodeFlags, std::size(TreeNodeFlags), "GuiTreeNodeFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, SelectableFlags, std::size(SelectableFlags), "GuiSelectableFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TabBarFlags, std::size(TabBarFlags), "GuiTabBarFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TabItemFlags, std::size(TabItemFlags), "GuiTabItemFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableFlags, std::size(TableFlags), "TableFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableColumnFlags, std::size(TableColumnFlags), "TableColumnFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableRowFlags, std::size(TableRowFlags), "TableRowFlags");
 }
 
 }

@@ -40,12 +40,15 @@ target_sources(Luapp
       Source/Luau/Gui.cpp
       Source/Luau/Web.cpp
       Source/Luau/Vec2.cpp
+      Source/Luau/Font.cpp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp
       Source/Luau/Input.cpp
       Source/Luau/Image.cpp
+      Source/Luau/Icons.cpp
       Source/Luau/Window.cpp
       Source/Luau/Config.cpp
+      Source/Luau/LuauHelp.cpp
       Source/Luau/GlobalFuncs.cpp
 )
 

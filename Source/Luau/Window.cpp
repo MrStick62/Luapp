@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Vec2.h"
+#include "LuauHelp.h"
 
 namespace Luau
 {
@@ -45,15 +46,7 @@ luaL_Reg Window::Functions[] = {
 
 void Window::LoadGlobal(lua_State *LuauState)
 {
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Window");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Window");
 }
 
 }

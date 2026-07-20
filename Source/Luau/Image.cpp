@@ -1,7 +1,9 @@
 #include "image.h"
+#include "LuauHelp.h"
 
 #include <array>
 #include <iostream>
+#include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -13,6 +15,8 @@
 #include <glad/gl.h>
 
 #include "Vec2.h"
+
+#include "../App.h"
 #include "../FileHelp.h"
 
 namespace Luau
@@ -21,8 +25,9 @@ namespace Luau
 int Image::New(lua_State* LuauState)
 {
    const char* FilePath = luaL_checkstring(LuauState, 1);
+   std::filesystem::path FullPath = App::GetPath() / FilePath;
 
-   std::string FileString = FileHelp::ReadWholeFile(std::string(FilePath));
+   std::string FileString = FileHelp::ReadWholeFile(FullPath.string());
    void* FileData = FileString.data();
    size_t FileSize = FileString.length();
 
@@ -119,16 +124,7 @@ luaL_Reg Image::MetaFunctions[] = {
 
 void Image::LoadGlobal(lua_State *LuauState)
 {
-   // Image global
-   lua_createtable(LuauState, 0, std::size(Functions));
-
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Image");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Image");
 
    // Image metatable
    luaL_newmetatable(LuauState, "Image");

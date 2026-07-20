@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <thread>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -121,8 +122,9 @@ int main(int argc, char* argv[])
       glfwSwapBuffers(Window);
 
       auto FrameEnd = std::chrono::steady_clock::now();
-      std::chrono::duration<float> FrameTime = FrameEnd - FrameStart;
-      DeltaTime = FrameTime.count();
+      auto FrameTime = FrameEnd - FrameStart;
+
+      DeltaTime = std::chrono::duration<float>(FrameTime).count();
    }
 
    ImGui_ImplOpenGL3_Shutdown();

@@ -11,6 +11,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "LuauHelp.h"
+
 #include "../App.h"
 #include "../FileHelp.h"
 
@@ -187,15 +189,7 @@ luaL_Reg Config::Functions[] = {
 
 void Config::LoadGlobal(lua_State* LuauState)
 {
-   lua_createtable(LuauState, 0, std::size(Functions));
-   
-   for (const luaL_Reg& Function : Functions)
-   {
-      lua_pushcfunction(LuauState, Function.func, Function.name);
-      lua_setfield(LuauState, -2, Function.name);
-   }
-
-   lua_setglobal(LuauState, "Config");
+   LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Config");
 }
 
 }
