@@ -18,6 +18,8 @@ private:
    static int SetNextWindowSize(lua_State* LuauState);
    static int SetNextWindowPos(lua_State* LuauState);
 
+   static int SetNextWindowSizeConstraints(lua_State* LuauState);
+
    static int GetWindowSize(lua_State* LuauState);
    static int GetWindowPos(lua_State* LuauState);
 

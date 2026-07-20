@@ -46,6 +46,16 @@ int Gui::SetNextWindowPos(lua_State* LuauState)
    return 0;
 }
 
+int Gui::SetNextWindowSizeConstraints(lua_State* LuauState)
+{
+   Vec2 Min = Vec2::LuauCheck(LuauState, 1);
+   Vec2 Max = Vec2::LuauCheck(LuauState, 2);
+
+   ImGui::SetNextWindowSizeConstraints(ImVec2(Min.X, Min.Y), ImVec2(Max.X, Max.Y));
+
+   return 0;
+}
+
 int Gui::GetWindowSize(lua_State* LuauState)
 {
    ImVec2 ImSize = ImGui::GetWindowSize();
@@ -960,6 +970,8 @@ int Gui::ShowFontSelector(lua_State* LuauState)
 luaL_Reg Gui::Functions[] = {
    { "SetNextWindowSize", SetNextWindowSize },
    { "SetNextWindowPos", SetNextWindowPos },
+
+   { "SetNextWindowSizeConstraints", SetNextWindowSizeConstraints },
 
    { "GetWindowSize", GetWindowSize },
    { "GetWindowPos", GetWindowPos },
