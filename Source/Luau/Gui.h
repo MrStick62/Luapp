@@ -105,6 +105,7 @@ private:
 
    static int Button(lua_State* LuauState);
    static int SmallButton(lua_State* LuauState);
+   static int InvisibleButton(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
 
    static int Selectable(lua_State* LuauState);
@@ -148,6 +149,8 @@ private:
 
    static std::pair<std::string, int> WindowFlags[];
    static std::pair<std::string, int> ChildFlags[];
+
+   static std::pair<std::string, int> ButtonFlags[];
 
    static std::pair<std::string, int> SliderFlags[];
    static std::pair<std::string, int> InputTextFlags[];

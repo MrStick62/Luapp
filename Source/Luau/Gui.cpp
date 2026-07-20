@@ -735,6 +735,17 @@ int Gui::SmallButton(lua_State* LuauState)
    return 1;
 }
 
+int Gui::InvisibleButton(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   Vec2 Size = Vec2::LuauCheck(LuauState, 2);
+   ImGuiButtonFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   lua_pushboolean(LuauState, ImGui::InvisibleButton(ID, ImVec2(Size.X, Size.Y), Flags));
+
+   return 1;
+}
+
 int Gui::Checkbox(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -1187,6 +1198,7 @@ luaL_Reg Gui::Functions[] = {
 
    { "Button", Button },
    { "SmallButton", SmallButton },
+   { "InvisibleButton", InvisibleButton },
    { "Checkbox", Checkbox },
 
    { "Selectable", Selectable },
@@ -1378,6 +1390,15 @@ std::pair<std::string, int> Gui::ChildFlags[] = {
    { "NavFlattened", ImGuiChildFlags_NavFlattened },
 };
 
+std::pair<std::string, int> Gui::ButtonFlags[] = {
+   { "None", ImGuiButtonFlags_None },
+   { "MouseButtonLeft", ImGuiButtonFlags_MouseButtonLeft },
+   { "MouseButtonRight", ImGuiButtonFlags_MouseButtonRight },
+   { "MouseButtonMiddle", ImGuiButtonFlags_MouseButtonMiddle },
+   { "EnableNav", ImGuiButtonFlags_EnableNav },
+   { "AllowOverlap", ImGuiButtonFlags_AllowOverlap },
+};
+
 std::pair<std::string, int> Gui::SliderFlags[] = {
    { "None", ImGuiSliderFlags_None },
    { "Logarithmic", ImGuiSliderFlags_Logarithmic },
@@ -1562,6 +1583,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
    LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
    LuauHelp::SetupEnumGlobal(LuauState, WindowFlags, std::size(WindowFlags), "GuiWindowFlags");
    LuauHelp::SetupEnumGlobal(LuauState, ChildFlags, std::size(ChildFlags), "GuiChildFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, ButtonFlags, std::size(ButtonFlags), "GuiButtonFlags");
    LuauHelp::SetupEnumGlobal(LuauState, SliderFlags, std::size(SliderFlags), "GuiSliderFlags");
    LuauHelp::SetupEnumGlobal(LuauState, InputTextFlags, std::size(InputTextFlags), "GuiInputTextFlags");
    LuauHelp::SetupEnumGlobal(LuauState, TreeNodeFlags, std::size(TreeNodeFlags), "GuiTreeNodeFlags");
