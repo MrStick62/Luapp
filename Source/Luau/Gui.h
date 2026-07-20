@@ -23,6 +23,13 @@ private:
    static int GetWindowSize(lua_State* LuauState);
    static int GetWindowPos(lua_State* LuauState);
 
+   static int GetCursorScreenPos(lua_State* LuauState);
+   static int SetCursorScreenPos(lua_State* LuauState);
+   static int GetContentRegionAvail(lua_State* LuauState);
+
+   static int GetCursorPos(lua_State* LuauState);
+   static int SetCursorPos(lua_State* LuauState);
+
    static int Begin(lua_State* LuauState);
    static int End(lua_State* LuauState);
 
@@ -89,6 +96,8 @@ private:
    static int TextLink(lua_State* LuauState);
    static int TextLinkOpenURL(lua_State* LuauState);
 
+   static int CalcTextSize(lua_State* LuauState);
+
    static int InputText(lua_State* LuauState);
    static int InputTextMultiline(lua_State* LuauState);
    static int InputFloat(lua_State* LuauState);
@@ -113,6 +122,9 @@ private:
    static int GetCurrentFont(lua_State* LuauState);
    static int SetFont(lua_State* LuauState);
 
+   static int PushFont(lua_State* LuauState);
+   static int PopFont(lua_State* LuauState);
+
    static int GetCurrentStyle(lua_State* LuauState);
    static int GetDarkStyle(lua_State* LuauState);
    static int GetLightStyle(lua_State* LuauState);
@@ -123,11 +135,15 @@ private:
    static int PopStyleColor(lua_State* LuauState);
    static int GetStyleColorName(lua_State* LuauState);
 
+   static int PushStyleVar(lua_State* LuauState);
+   static int PopStyleVar(lua_State* LuauState);
+
    static int ShowDemoWindow(lua_State* LuauState);
    static int ShowIDStackToolWindow(lua_State* LuauState);
    static int ShowFontSelector(lua_State* LuauState);
 
    static std::pair<std::string, int> GuiColors[];
+   static std::pair<std::string, int> StyleVars[];
    static std::pair<std::string, int> TableBgTargets[];
 
    static std::pair<std::string, int> WindowFlags[];

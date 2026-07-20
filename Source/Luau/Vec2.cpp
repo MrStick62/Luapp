@@ -22,6 +22,47 @@ int Vec2::New(lua_State* LuauState)
    return 1;
 }
 
+int Vec2::__add(lua_State* LuauState)
+{
+   Vec2 Self = Vec2::LuauCheck(LuauState, 1);
+   Vec2 Value = Vec2::LuauCheck(LuauState, 2);
+
+   (Self + Value).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Vec2::__sub(lua_State* LuauState)
+{
+   Vec2 Self = Vec2::LuauCheck(LuauState, 1);
+   Vec2 Value = Vec2::LuauCheck(LuauState, 2);
+
+   (Self - Value).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Vec2::__mul(lua_State* LuauState)
+{
+   Vec2 Self = Vec2::LuauCheck(LuauState, 1);
+   float Value = luaL_checknumber(LuauState, 2);
+
+   (Self * Value).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Vec2::__div(lua_State* LuauState)
+{
+   Vec2 Self = Vec2::LuauCheck(LuauState, 1);
+   float Value = luaL_checknumber(LuauState, 2);
+
+   (Self / Value).LuauPush(LuauState);
+
+   return 1;
+}
+
+
 Vec2 Vec2::LuauCheck(lua_State *LuauState, int Index)
 {
    luaL_checktype(LuauState, Index, LUA_TTABLE);
@@ -57,15 +98,58 @@ void Vec2::LuauPush(lua_State* LuauState)
 
    lua_pushnumber(LuauState, Y);
    lua_setfield(LuauState, -2, "Y");
+
+   luaL_getmetatable(LuauState, "Vec2");
+   lua_setmetatable(LuauState, -2);
+}
+
+Vec2 Vec2::operator+(const Vec2& Value)
+{
+   return Vec2(X + Value.X, Y + Value.Y);
+}
+
+Vec2 Vec2::operator-(const Vec2& Value)
+{
+   return Vec2(X - Value.X, Y - Value.Y);
+}
+
+Vec2 Vec2::operator*(float Value)
+{
+   return Vec2(X * Value, Y * Value);
+}
+
+Vec2 Vec2::operator/(float Value)
+{
+   return Vec2(X / Value, Y / Value);
 }
 
 luaL_Reg Vec2::Functions[] = {
    { "New", New },
 };
 
+luaL_Reg Vec2::MetaFunctions[] = {
+   { "__add", __add },
+   { "__sub", __sub },
+   { "__mul", __mul },
+   { "__div", __div },
+};
+
 void Vec2::LoadGlobal(lua_State *LuauState)
 {
    LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Vec2");
+
+   luaL_newmetatable(LuauState, "Vec2");
+
+   lua_pushvalue(LuauState, -1);
+   lua_setfield(LuauState, -2, "__index");
+
+   for (const luaL_Reg& Function : MetaFunctions)
+   {
+      lua_pushcfunction(LuauState, Function.func, Function.name);
+      lua_setfield(LuauState, -2, Function.name);
+   }
+
+   lua_pop(LuauState, 1);
 }
 
 }

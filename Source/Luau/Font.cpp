@@ -102,9 +102,8 @@ void Font::AddDefaultIcons()
 
    ImFontConfig Config;
    Config.MergeMode = true;
-   Config.GlyphMinAdvanceX = 13.0f;
 
-   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Icons" / "fa-solid-900.ttf").string().data(), 13.0f, &Config);
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Icons" / "fa-solid-900.ttf").string().data(), 0.0f, &Config);
 }
 
 void Font::LoadGlobal(lua_State* LuauState)

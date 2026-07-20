@@ -78,7 +78,10 @@ void App::Main()
    lua_getglobal(LuauState, "Main");
 
    if (!lua_isfunction(LuauState, -1))
-       return;
+   {
+      lua_pop(LuauState, 1);
+      return;
+   }
 
    lua_pcall(LuauState, 0, 0, 0);
 }
@@ -88,7 +91,10 @@ void App::Tick(float DeltaTime)
    lua_getglobal(LuauState, "Tick");
 
    if (!lua_isfunction(LuauState, -1))
+   {
+       lua_pop(LuauState, 1);
        return;
+   }
 
    lua_pushnumber(LuauState, DeltaTime);
    lua_pcall(LuauState, 1, 0, 0);
@@ -99,7 +105,10 @@ void App::OnGui(float DeltaTime)
    lua_getglobal(LuauState, "OnGui");
 
    if (!lua_isfunction(LuauState, -1))
+   {
+       lua_pop(LuauState, 1);
        return;
+   }
 
    lua_pushnumber(LuauState, DeltaTime);
    lua_pcall(LuauState, 1, 0, 0);

@@ -25,6 +25,15 @@ int Window::GetSize(lua_State* LuauState)
    return 1;
 }
 
+int Window::SetSize(lua_State* LuauState)
+{
+   Vec2 Size = Vec2::LuauCheck(LuauState, 1);
+
+   glfwSetWindowSize(WindowRef, Size.X, Size.Y);
+
+   return 0;
+}
+
 int Window::Close(lua_State* LuauState)
 {
    glfwSetWindowShouldClose(WindowRef, true);
@@ -41,6 +50,7 @@ void Window::SetCurrentWindow(GLFWwindow *NewWindow)
 
 luaL_Reg Window::Functions[] = {
    { "GetSize", GetSize },
+   { "SetSize", SetSize },
    { "Close", Close },
 };
 

@@ -16,6 +16,7 @@ private:
    static luaL_Reg Functions[];
 
    static int GetSize(lua_State* LuauState);
+   static int SetSize(lua_State* LuauState);
    static int Close(lua_State* LuauState);
 
 public:

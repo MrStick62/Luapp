@@ -74,6 +74,51 @@ int Gui::GetWindowPos(lua_State* LuauState)
    return 1;
 }
 
+int Gui::GetCursorScreenPos(lua_State* LuauState)
+{
+   ImVec2 ImPos = ImGui::GetCursorScreenPos();
+
+   Vec2(ImPos.x, ImPos.y).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Gui::SetCursorScreenPos(lua_State* LuauState)
+{
+   Vec2 Pos = Vec2::LuauCheck(LuauState, 1);
+
+   ImGui::SetCursorScreenPos(ImVec2(Pos.X, Pos.Y));
+
+   return 0;
+}
+
+int Gui::GetContentRegionAvail(lua_State* LuauState)
+{
+   ImVec2 ImSize = ImGui::GetContentRegionAvail();
+
+   Vec2(ImSize.x, ImSize.y).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Gui::GetCursorPos(lua_State* LuauState)
+{
+   ImVec2 ImPos = ImGui::GetCursorPos();
+
+   Vec2(ImPos.x, ImPos.y).LuauPush(LuauState);
+
+   return 1;
+}
+
+int Gui::SetCursorPos(lua_State* LuauState)
+{
+   Vec2 Pos = Vec2::LuauCheck(LuauState, 1);
+
+   ImGui::SetCursorPos(ImVec2(Pos.X, Pos.Y));
+
+   return 0;
+}
+
 int Gui::Begin(lua_State* LuauState)
 {
    const char* Name = luaL_checkstring(LuauState, 1);
@@ -594,6 +639,16 @@ int Gui::TextLinkOpenURL(lua_State* LuauState)
    return 1;
 }
 
+int Gui::CalcTextSize(lua_State* LuauState)
+{
+   const char* Text = luaL_checkstring(LuauState, 1);
+
+   ImVec2 TextSize = ImGui::CalcTextSize(Text);
+   Vec2(TextSize.x, TextSize.y).LuauPush(LuauState);
+
+   return 1;
+}
+
 int Gui::InputText(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -804,6 +859,18 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.FontSizeBase);
    lua_setfield(LuauState, -2, "FontSizeBase");
 
+   lua_pushnumber(LuauState, Style.WindowRounding);
+   lua_setfield(LuauState, -2, "WindowRounding");
+
+   lua_pushnumber(LuauState, Style.ChildRounding);
+   lua_setfield(LuauState, -2, "ChildRounding");
+
+   lua_pushnumber(LuauState, Style.FrameRounding);
+   lua_setfield(LuauState, -2, "FrameRounding");
+
+   lua_pushnumber(LuauState, Style.ImageRounding);
+   lua_setfield(LuauState, -2, "ImageRounding");
+
    lua_createtable(LuauState, ImGuiCol_COUNT, 0);
 
    for (int i = 1; i <= ImGuiCol_COUNT; i++)
@@ -825,6 +892,22 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    
    lua_getfield(LuauState, Index, "FontSizeBase");
    Style.FontSizeBase = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "WindowRounding");
+   Style.WindowRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "ChildRounding");
+   Style.ChildRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "FrameRounding");
+   Style.FrameRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "ImageRounding");
+   Style.ImageRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "Colors");
@@ -859,6 +942,23 @@ int Gui::SetFont(lua_State* LuauState)
 
    ImGuiIO& IO = ImGui::GetIO();
    IO.FontDefault = NewFont;
+
+   return 0;
+}
+
+int Gui::PushFont(lua_State* LuauState)
+{
+   ImFont* NewFont = Font::LuauCheck(LuauState, 1);
+   float NewSize = luaL_optnumber(LuauState, 2, 0.0f);
+
+   ImGui::PushFont(NewFont, NewSize);
+
+   return 0;
+}
+
+int Gui::PopFont(lua_State* LuauState)
+{
+   ImGui::PopFont();
 
    return 0;
 }
@@ -932,6 +1032,35 @@ int Gui::GetStyleColorName(lua_State* LuauState)
    return 1;
 }
 
+int Gui::PushStyleVar(lua_State* LuauState)
+{
+   ImGuiStyleVar Index = luaL_checkinteger(LuauState, 1);
+
+   if (lua_isnumber(LuauState, 2))
+   {
+      float Value = luaL_checknumber(LuauState, 2);
+
+      ImGui::PushStyleVar(Index, Value);
+   }
+   else if (lua_istable(LuauState, 2))
+   {
+      Vec2 Value = Vec2::LuauCheck(LuauState, 2);
+
+      ImGui::PushStyleVar(Index, ImVec2(Value.X, Value.Y));
+   }
+
+   return 0;
+}
+
+int Gui::PopStyleVar(lua_State* LuauState)
+{
+   int Count = luaL_optinteger(LuauState, 1, 1);
+
+   ImGui::PopStyleVar(Count);
+
+   return 0;
+}
+
 int Gui::ShowDemoWindow(lua_State* LuauState)
 {
    int IsOpen = luaL_optboolean(LuauState, 1, -1);
@@ -975,6 +1104,13 @@ luaL_Reg Gui::Functions[] = {
 
    { "GetWindowSize", GetWindowSize },
    { "GetWindowPos", GetWindowPos },
+
+   { "GetCursorScreenPos", GetCursorScreenPos },
+   { "SetCursorScreenPos", SetCursorScreenPos },
+   { "GetContentRegionAvail", GetContentRegionAvail },
+
+   { "GetCursorPos", GetCursorPos },
+   { "SetCursorPos", SetCursorPos },
 
    { "Begin", Begin },
    { "End", End },
@@ -1042,6 +1178,8 @@ luaL_Reg Gui::Functions[] = {
    { "TextLink", TextLink },
    { "TextLinkOpenURL", TextLinkOpenURL },
 
+   { "CalcTextSize", CalcTextSize },
+
    { "InputText", InputText },
    { "InputTextMultiline", InputTextMultiline },
    { "InputFloat", InputFloat },
@@ -1063,6 +1201,9 @@ luaL_Reg Gui::Functions[] = {
    { "GetCurrentFont", GetCurrentFont },
    { "SetFont", SetFont },
 
+   { "PushFont", PushFont },
+   { "PopFont", PopFont },
+
    { "GetCurrentStyle", GetCurrentStyle },
    { "GetDarkStyle", GetDarkStyle },
    { "GetLightStyle", GetLightStyle },
@@ -1072,6 +1213,9 @@ luaL_Reg Gui::Functions[] = {
    { "PushStyleColor", PushStyleColor },
    { "PopStyleColor", PopStyleColor },
    { "GetStyleColorName", GetStyleColorName },
+
+   { "PushStyleVar", PushStyleVar },
+   { "PopStyleVar", PopStyleVar },
 
    { "ShowDemoWindow", ShowDemoWindow },
    { "ShowIDStackToolWindow", ShowIDStackToolWindow },
@@ -1139,6 +1283,53 @@ std::pair<std::string, int> Gui::GuiColors[] = {
    { "NavWindowingHighlight", ImGuiCol_NavWindowingHighlight },
    { "NavWindowingDimBg", ImGuiCol_NavWindowingDimBg },
    { "ModalWindowDimBg", ImGuiCol_ModalWindowDimBg },
+};
+
+std::pair<std::string, int> Gui::StyleVars[] = {
+   { "Alpha", ImGuiStyleVar_Alpha },
+   { "DisabledAlpha", ImGuiStyleVar_DisabledAlpha },
+   { "WindowPadding", ImGuiStyleVar_WindowPadding },
+   { "WindowRounding", ImGuiStyleVar_WindowRounding },
+   { "WindowBorderSize", ImGuiStyleVar_WindowBorderSize },
+   { "WindowMinSize", ImGuiStyleVar_WindowMinSize },
+   { "WindowTitleAlign", ImGuiStyleVar_WindowTitleAlign },
+   { "ChildRounding", ImGuiStyleVar_ChildRounding },
+   { "ChildBorderSize", ImGuiStyleVar_ChildBorderSize },
+   { "PopupRounding", ImGuiStyleVar_PopupRounding },
+   { "PopupBorderSize", ImGuiStyleVar_PopupBorderSize },
+   { "FramePadding", ImGuiStyleVar_FramePadding },
+   { "FrameRounding", ImGuiStyleVar_FrameRounding },
+   { "FrameBorderSize", ImGuiStyleVar_FrameBorderSize },
+   { "ItemSpacing", ImGuiStyleVar_ItemSpacing },
+   { "ItemInnerSpacing", ImGuiStyleVar_ItemInnerSpacing },
+   { "IndentSpacing", ImGuiStyleVar_IndentSpacing },
+   { "CellPadding", ImGuiStyleVar_CellPadding },
+   { "ScrollbarSize", ImGuiStyleVar_ScrollbarSize },
+   { "ScrollbarRounding", ImGuiStyleVar_ScrollbarRounding },
+   { "ScrollbarPadding", ImGuiStyleVar_ScrollbarPadding },
+   { "GrabMinSize", ImGuiStyleVar_GrabMinSize },
+   { "GrabRounding", ImGuiStyleVar_GrabRounding },
+   { "ImageRounding", ImGuiStyleVar_ImageRounding },
+   { "ImageBorderSize", ImGuiStyleVar_ImageBorderSize },
+   { "TabRounding", ImGuiStyleVar_TabRounding },
+   { "TabBorderSize", ImGuiStyleVar_TabBorderSize },
+   { "TabMinWidthBase", ImGuiStyleVar_TabMinWidthBase },
+   { "TabMinWidthShrink", ImGuiStyleVar_TabMinWidthShrink },
+   { "TabBarBorderSize", ImGuiStyleVar_TabBarBorderSize },
+   { "TabBarOverlineSize", ImGuiStyleVar_TabBarOverlineSize },
+   { "TableAngledHeadersAngle", ImGuiStyleVar_TableAngledHeadersAngle },
+   { "TableAngledHeadersTextAlign", ImGuiStyleVar_TableAngledHeadersTextAlign },
+   { "TreeLinesSize", ImGuiStyleVar_TreeLinesSize },
+   { "TreeLinesRounding", ImGuiStyleVar_TreeLinesRounding },
+   { "MenuItemRounding", ImGuiStyleVar_MenuItemRounding },
+   { "SelectableRounding", ImGuiStyleVar_SelectableRounding },
+   { "DragDropTargetRounding", ImGuiStyleVar_DragDropTargetRounding },
+   { "ButtonTextAlign", ImGuiStyleVar_ButtonTextAlign },
+   { "SelectableTextAlign", ImGuiStyleVar_SelectableTextAlign },
+   { "SeparatorSize", ImGuiStyleVar_SeparatorSize },
+   { "SeparatorTextBorderSize", ImGuiStyleVar_SeparatorTextBorderSize },
+   { "SeparatorTextAlign", ImGuiStyleVar_SeparatorTextAlign },
+   { "SeparatorTextPadding", ImGuiStyleVar_SeparatorTextPadding },
 };
 
 std::pair<std::string, int> Gui::TableBgTargets[] = {
@@ -1367,6 +1558,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
    // Setup globals
    LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Gui");
    LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors");
+   LuauHelp::SetupEnumGlobal(LuauState, StyleVars, std::size(StyleVars), "GuiStyleVars");
    LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
    LuauHelp::SetupEnumGlobal(LuauState, WindowFlags, std::size(WindowFlags), "GuiWindowFlags");
    LuauHelp::SetupEnumGlobal(LuauState, ChildFlags, std::size(ChildFlags), "GuiChildFlags");
@@ -1376,9 +1568,9 @@ void Gui::LoadGlobal(lua_State* LuauState)
    LuauHelp::SetupEnumGlobal(LuauState, SelectableFlags, std::size(SelectableFlags), "GuiSelectableFlags");
    LuauHelp::SetupEnumGlobal(LuauState, TabBarFlags, std::size(TabBarFlags), "GuiTabBarFlags");
    LuauHelp::SetupEnumGlobal(LuauState, TabItemFlags, std::size(TabItemFlags), "GuiTabItemFlags");
-   LuauHelp::SetupEnumGlobal(LuauState, TableFlags, std::size(TableFlags), "TableFlags");
-   LuauHelp::SetupEnumGlobal(LuauState, TableColumnFlags, std::size(TableColumnFlags), "TableColumnFlags");
-   LuauHelp::SetupEnumGlobal(LuauState, TableRowFlags, std::size(TableRowFlags), "TableRowFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableFlags, std::size(TableFlags), "GuiTableFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableColumnFlags, std::size(TableColumnFlags), "GuiTableColumnFlags");
+   LuauHelp::SetupEnumGlobal(LuauState, TableRowFlags, std::size(TableRowFlags), "GuiTableRowFlags");
 }
 
 }
