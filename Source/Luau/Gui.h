@@ -15,6 +15,8 @@ class Gui
 private:
    static luaL_Reg Functions[];
 
+   static int SetSaveFile(lua_State* LuauState);
+
    static int SetNextWindowSize(lua_State* LuauState);
    static int SetNextWindowPos(lua_State* LuauState);
 

@@ -19,6 +19,7 @@
 #include "Color.h"
 #include "LuauHelp.h"
 
+#include "../App.h"
 #include "../FileHelp.h"
 
 namespace Luau
@@ -27,6 +28,19 @@ namespace Luau
 /**
  *    Luau function C++ implementations
  */
+
+int Gui::SetSaveFile(lua_State* LuauState)
+{
+   static std::string Filename;
+   Filename = (App::GetPath() / luaL_checkstring(LuauState, 1)).string();
+
+   ImGuiIO& IO = ImGui::GetIO();
+   IO.IniFilename = Filename.data();
+
+   ImGui::LoadIniSettingsFromDisk(IO.IniFilename);
+
+   return 0;
+}
 
 int Gui::SetNextWindowSize(lua_State* LuauState)
 {
@@ -1108,6 +1122,8 @@ int Gui::ShowFontSelector(lua_State* LuauState)
  */
 
 luaL_Reg Gui::Functions[] = {
+   { "SetSaveFile", SetSaveFile },
+
    { "SetNextWindowSize", SetNextWindowSize },
    { "SetNextWindowPos", SetNextWindowPos },
 
@@ -1593,6 +1609,9 @@ void Gui::LoadGlobal(lua_State* LuauState)
    LuauHelp::SetupEnumGlobal(LuauState, TableFlags, std::size(TableFlags), "GuiTableFlags");
    LuauHelp::SetupEnumGlobal(LuauState, TableColumnFlags, std::size(TableColumnFlags), "GuiTableColumnFlags");
    LuauHelp::SetupEnumGlobal(LuauState, TableRowFlags, std::size(TableRowFlags), "GuiTableRowFlags");
+
+   ImGuiIO& IO = ImGui::GetIO();
+   IO.IniFilename = nullptr;
 }
 
 }

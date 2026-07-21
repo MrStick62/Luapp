@@ -93,7 +93,9 @@ end
 
 declare class Font_Class
     --- Load a font from a .ttf file. Path is always relative to the main file
+    --- Automatically added to the font list returned from GetAll()
     LoadNew: (FontPath: string, IconPath: string?) -> Font
+    --- Returns a list of all loaded fonts
     GetAll: () -> { Font }
 end
 
@@ -589,22 +591,40 @@ declare GuiTableRowFlags: GuiTableRowFlags_Class
 -- Main Gui class --
 --------------------
 
-declare class Gui_Class
-	SetNextWindowSize: (Size: Vec2) -> ()
-	SetNextWindowPos: (Size: Vec2) -> ()
+-- The Gui class is essentially a Luau wrapper for the C++ Gui library Dear ImGui
+-- To take advantage of Luau's unique features, some functions have slightly different behaviors from ImGui
+-- Visit https://github.com/ocornut/imgui for more detailed documentation on the library
 
+-- Bonus tips:
+-- 1. Hide the label of a Gui item by prefixing the string with "##"
+
+declare class Gui_Class
+    --- Saves the Gui layout in a file at the specified path. Path is always relative to the main file
+    SetSaveFile: (Path: string) -> ()
+
+    --- Call before Begin() to specify the size of the window
+	SetNextWindowSize: (Size: Vec2) -> ()
+    --- Call before Begin() to specify the position of the window
+	SetNextWindowPos: (Size: Vec2) -> ()
+    --- Call before Begin() to specify the minimum and maximum size of the next window
 	SetNextWindowSizeConstraints: (Min: Vec2, Max: Vec2) -> ()
 
+    --- These horrible functions killed my family back in 2005
+    --- You probably want to use GetContentRegionAvail() and GetCursorScreenPos() instead
 	GetWindowSize: () -> Vec2
 	GetWindowPos: () -> Vec2
 
+    --- The cursor represents the position of the next output gui output
+    --- CursorScreenPos is the "absolute" coordinate, while CursorPos is relative to the current window
 	GetCursorScreenPos: () -> Vec2
 	SetCursorScreenPos: (Pos: Vec2) -> ()
-	--- This beautiful function saved my life back in 2005
-	GetContentRegionAvail: () -> Vec2 
 
 	GetCursorPos: () -> Vec2
 	SetCursorPos: (Pos: Vec2) -> ()
+
+    --- Returns the available space remaining in the window from the current cursor position
+	--- This beautiful function saved my life back in 2005
+	GetContentRegionAvail: () -> Vec2 
 
 	--- Begins rendering a new window. Must be followed by an End() call after content is specified
 	--- First return return value true if the content should be rendered, false if it is collapsed
@@ -612,19 +632,29 @@ declare class Gui_Class
 	Begin: (Name: string, IsOpen: boolean?, Flags: GuiWindowFlags?) -> (boolean, boolean)
 	End: () -> ()
 
+    --- Creates a self-contained child window within the window currently being rendered
+    --- Must be followed by EndChild() after rendering content has been specified
 	BeginChild: (ID: string, Size: Vec2, ChildFlags: GuiChildFlags?, WindowFlags: GuiWindowFlags?) -> boolean
 	EndChild: () -> ()
 
+    --- Creates a menu bar at the top of the application
+    --- Must be followed by EndMainMenuBar() if it returns true
 	BeginMainMenuBar: () -> boolean
 	EndMainMenuBar: () -> ()
 	
-	--- MenuBar window flag must be present for this to work
+    --- Creates a menu bar at the top of the window currently being rendered
+    --- Must be followed by EndMenuBar() if it returns true
+	--- MenuBar window flag must be present in the parent window for this to work
 	BeginMenuBar: () -> boolean
 	EndMenuBar: () -> ()
 
+    --- Creates a menu entry on the current menu bar
+    --- Must be followed by EndMenu() if it returns true
 	BeginMenu: (Label: string, Enabled: boolean?) -> boolean
 	EndMenu: () -> ()
 
+    --- Creates a selectable element within a menu
+    --- Returns true when clicked
 	MenuItem: (Label: string, Shortcut: string?, Selected: boolean?, Enabled: boolean?) -> boolean
 
 	BeginTabBar: (ID: string, Flags: GuiTabBarFlags?) -> boolean
@@ -651,11 +681,17 @@ declare class Gui_Class
 
 	TableSetBgColor: (Target: GuiTableBgTarget, Color: Color, Column: number?) -> ()
 
+    --- Grays out colors and disables interactions with the following content
+    --- Must be followed by EndDisabled() after content is specified
 	BeginDisabled: () -> ()
 	EndDisabled: () -> ()
 
+    --- Because a Gui item's label acts as its ID, you cannot create multiple items with the same label within a window
+    --- To get around this, PushID/PopID provides a means of resetting the ID scope with a unique ID
+    --- This is primarily used to create repeat items within a loop without getting errors
+    --- PushID() must be followed by PopID() before the end of the current window
 	PushID: (ID: string) -> ()
-	PushID: (ID: number) -> ()
+	PushID: (ID: number) -> () -- Must be a whole number
 	PopID: () -> ()
 
 	SameLine: (Offset: number?, Spacing: number?) -> ()
@@ -671,16 +707,28 @@ declare class Gui_Class
 	ImageWithBg: (Image: Image, Size: Vec2?, UV1: Vec2?, UV2: Vec2?, Background: Color?, Tint: Color?) -> boolean
 	ImageButton: (ID: string, Image: Image, Size: Vec2?, UV1: Vec2?, UV2: Vec2?, Background: Color?, Tint: Color?) -> boolean
 
+    --- Creates a line of formatted text in the current window
+    --- If no color is specified, uses the default text color of the current style/theme
+    --- Wrapped text automatically jumps to the next line to fit itself in the available space of the window
     Text: (Text: string, Color: Color?, Wrapped: boolean?) -> ()
+    --- Formatted ext with a Separator() line through it
 	SeparatorText: (Text: string) -> ()
+    --- Text that returns true when clicked
 	TextLink: (Text: string) -> boolean
+    --- Essentially a hyperlink. Opens the specified URL when clicked
 	TextLinkOpenURL: (Label: string, URL: string) -> boolean
 
+    --- Returns the size of a formatted line of text if you were to draw it
 	CalcTextSize: (Text: string) -> Vec2
 
+    --- Creates a text box for editing string values
+    --- The first value returned is the edited input string
+    --- The second value is true if edited this frame
 	InputText: (Label: string, Input: string, Flags: GuiInputTextFlags?) -> (string, boolean)
 	InputTextMultiline: (Label: string, Input: string, Size: Vec2?, Flags: GuiInputTextFlags?) -> (string, boolean)
+    --- Input text for editing numbers
 	InputFloat: (Label: string, Value: number, Precision: number?, Flags: GuiInputTextFlags?) -> (number, boolean)
+    --- Input text for editing whole numbers
 	InputInt: (Label: string, Value: number, Flags: GuiInputTextFlags?) -> (number, boolean)
 
 	Button: (Label: string, Size: Vec2?) -> boolean

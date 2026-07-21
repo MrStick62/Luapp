@@ -35,6 +35,7 @@ target_sources(Luapp
    PRIVATE
       Source/Main.cpp
       Source/FileHelp.cpp
+      Source/Setup.cpp
       Source/App.cpp
 
       Source/Luau/Gui.cpp

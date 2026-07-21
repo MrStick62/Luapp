@@ -10,6 +10,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include "App.h"
+#include "Setup.h"
 
 constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
@@ -18,11 +19,22 @@ const char* APP_NAME = "Luapp";
 
 int main(int argc, char* argv[])
 {
-
    if (argc < 2)
    {
       std::cerr << "Path not specified!" << std::endl;
       return 1;
+   }
+
+   if (!strcmp(argv[1], "--setup"))
+   {
+      if (argc < 3)
+      {
+         std::cerr << "Path not specified!" << std::endl;
+         return 1;
+      }
+
+      Setup::Run(argv[2]);
+      return 0;
    }
 
    std::string ProgramName(argv[1]);

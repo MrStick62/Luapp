@@ -26,6 +26,7 @@
 
 lua_State* App::LuauState;
 std::filesystem::path App::Path;
+std::string App::AppName;
 
 const std::string App::EntryPointName = "Main.luau";
 const std::string App::DirectoryName = "Luapp";
@@ -34,8 +35,10 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
 {
    // Set path
 #ifdef LOCAL_APP_PATH
-   Path = static_cast<std::filesystem::path>(Name).parent_path();
+   AppName = std::filesystem::path(Name).filename().string();
+   Path = std::filesystem::path(Name).parent_path();
 #else
+   AppName = Name;
    Path = FileHelp::GetHomeDirectory() / "Documents" / DirectoryName / Name;
 #endif
 
