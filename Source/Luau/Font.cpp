@@ -129,6 +129,12 @@ void Font::LoadGlobal(lua_State* LuauState)
    IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Roboto-Medium.ttf").string().data());
    AddDefaultIcons();
 
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Araboto-Medium-400.ttf").string().data());
+   AddDefaultIcons();
+
+   IO.Fonts->AddFontFromFileTTF((FileHelp::GetProjectDirectory() / "Assets" / "Fonts" / "Araboto-Normal-400.ttf").string().data());
+   AddDefaultIcons();
+
    IO.FontDefault = DefaultFont;
 
    // Image metatable

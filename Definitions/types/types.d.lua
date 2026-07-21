@@ -252,8 +252,10 @@ declare GuiTableBgTarget: GuiTableBgTarget_Class
 
 export type GuiStyle = {
 	FontSizeBase: number,
+    FontScaleDpi: number,
 	WindowRounding: number,
 	ChildRounding: number,
+    FramePadding: Vec2,
 	FrameRounding: number,
 	ImageRounding: number,
 	--- Index with GuiColor

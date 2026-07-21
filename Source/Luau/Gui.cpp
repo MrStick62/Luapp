@@ -884,11 +884,17 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.FontSizeBase);
    lua_setfield(LuauState, -2, "FontSizeBase");
 
+   lua_pushnumber(LuauState, Style.FontScaleDpi);
+   lua_setfield(LuauState, -2, "FontScaleDpi");
+
    lua_pushnumber(LuauState, Style.WindowRounding);
    lua_setfield(LuauState, -2, "WindowRounding");
 
    lua_pushnumber(LuauState, Style.ChildRounding);
    lua_setfield(LuauState, -2, "ChildRounding");
+
+   Vec2(Style.FramePadding.x, Style.FramePadding.y).LuauPush(LuauState);
+   lua_setfield(LuauState, -2, "FramePadding");
 
    lua_pushnumber(LuauState, Style.FrameRounding);
    lua_setfield(LuauState, -2, "FrameRounding");
@@ -919,12 +925,21 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    Style.FontSizeBase = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
+   lua_getfield(LuauState, Index, "FontScaleDpi");
+   Style.FontScaleDpi = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
    lua_getfield(LuauState, Index, "WindowRounding");
    Style.WindowRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "ChildRounding");
    Style.ChildRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "FramePadding");
+   Vec2 FramePadding = Vec2::LuauCheck(LuauState, -1);
+   Style.FramePadding = ImVec2(FramePadding.X, FramePadding.Y);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "FrameRounding");
