@@ -1,4 +1,4 @@
-#include "image.h"
+#include "Image.h"
 #include "LuauHelp.h"
 
 #include <array>

@@ -679,6 +679,23 @@ int Gui::InputText(lua_State* LuauState)
    return 2;
 }
 
+int Gui::InputTextWithHint(lua_State* LuauState)
+{
+   const char* Label = luaL_checkstring(LuauState, 1);
+   const char* Hint = luaL_checkstring(LuauState, 2);
+   const char* Input = luaL_checkstring(LuauState, 3);
+   ImGuiInputTextFlags Flags = luaL_optinteger(LuauState, 4, 0);
+
+   char Buffer[1024];
+   strcpy(Buffer, Input);
+
+   bool Modified = ImGui::InputTextWithHint(Label, Hint, Buffer, 1024, Flags);
+   lua_pushstring(LuauState, Buffer);
+   lua_pushboolean(LuauState, Modified);
+
+   return 2;
+}
+
 int Gui::InputTextMultiline(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -768,6 +785,15 @@ int Gui::Checkbox(lua_State* LuauState)
    ImGui::Checkbox(Label, &Checked);
 
    lua_pushboolean(LuauState, Checked);
+
+   return 1;
+}
+
+int Gui::IsItemHovered(lua_State* LuauState)
+{
+   ImGuiHoveredFlags Flags = luaL_optinteger(LuauState, 1, 0);
+
+   lua_pushboolean(LuauState, ImGui::IsItemHovered());
 
    return 1;
 }
@@ -988,7 +1014,10 @@ int Gui::SetFont(lua_State* LuauState)
 
 int Gui::PushFont(lua_State* LuauState)
 {
-   ImFont* NewFont = Font::LuauCheck(LuauState, 1);
+   ImFont* NewFont = nullptr; 
+   if (lua_istable(LuauState, 1))
+      NewFont = Font::LuauCheck(LuauState, 1);
+
    float NewSize = luaL_optnumber(LuauState, 2, 0.0f);
 
    ImGui::PushFont(NewFont, NewSize);
@@ -1223,6 +1252,7 @@ luaL_Reg Gui::Functions[] = {
    { "CalcTextSize", CalcTextSize },
 
    { "InputText", InputText },
+   { "InputTextWithHint", InputTextWithHint },
    { "InputTextMultiline", InputTextMultiline },
    { "InputFloat", InputFloat },
    { "InputInt", InputInt },
@@ -1231,6 +1261,8 @@ luaL_Reg Gui::Functions[] = {
    { "SmallButton", SmallButton },
    { "InvisibleButton", InvisibleButton },
    { "Checkbox", Checkbox },
+
+   { "IsItemHovered", IsItemHovered },
 
    { "Selectable", Selectable },
 

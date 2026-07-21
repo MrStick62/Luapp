@@ -17,6 +17,9 @@ constexpr int WINDOW_HEIGHT = 600;
 
 const char* APP_NAME = "Luapp";
 
+void FramebufferSizeCallback(GLFWwindow* Window, int Width, int Height);
+void DrawWindow(GLFWwindow* Window);
+
 int main(int argc, char* argv[])
 {
    if (argc < 2)
@@ -63,6 +66,7 @@ int main(int argc, char* argv[])
    }
 
    glfwMakeContextCurrent(Window);
+   glfwSetFramebufferSizeCallback(Window, FramebufferSizeCallback);
 
    /**
     *    Initialize GLAD
@@ -108,35 +112,9 @@ int main(int argc, char* argv[])
 
    while (!glfwWindowShouldClose(Window))
    {
-      auto FrameStart = std::chrono::steady_clock::now();
-
       glfwPollEvents();
 
-      App::Tick(DeltaTime);
-
-      ImGui_ImplOpenGL3_NewFrame();
-      ImGui_ImplGlfw_NewFrame();
-      ImGui::NewFrame();
-
-      App::OnGui(DeltaTime);
-
-      ImGui::Render();
-
-      int WindowWidth, WindowHeight;
-      glfwGetFramebufferSize(Window, &WindowWidth, &WindowHeight);
-      glViewport(0, 0, WindowWidth, WindowHeight);
-      
-      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      glClear(GL_COLOR_BUFFER_BIT);
-
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-      glfwSwapBuffers(Window);
-
-      auto FrameEnd = std::chrono::steady_clock::now();
-      auto FrameTime = FrameEnd - FrameStart;
-
-      DeltaTime = std::chrono::duration<float>(FrameTime).count();
+      DrawWindow(Window);
    }
 
    ImGui_ImplOpenGL3_Shutdown();
@@ -145,4 +123,40 @@ int main(int argc, char* argv[])
    glfwTerminate();
 
    return 0;
+}
+
+void DrawWindow(GLFWwindow* Window)
+{
+   static float DeltaTime = 1.0f;
+
+   auto FrameStart = std::chrono::steady_clock::now();
+ 
+   App::Tick(DeltaTime);
+
+   ImGui_ImplOpenGL3_NewFrame();
+   ImGui_ImplGlfw_NewFrame();
+   ImGui::NewFrame();
+
+   App::OnGui(DeltaTime);
+
+   ImGui::Render();
+
+   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+   glClear(GL_COLOR_BUFFER_BIT);
+
+   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+   glfwSwapBuffers(Window);
+
+   auto FrameEnd = std::chrono::steady_clock::now();
+   auto FrameTime = FrameEnd - FrameStart;
+
+   DeltaTime = std::chrono::duration<float>(FrameTime).count();  
+}
+
+void FramebufferSizeCallback(GLFWwindow* Window, int Width, int Height)
+{
+   glViewport(0, 0, Width, Height);
+
+   DrawWindow(Window);
 }

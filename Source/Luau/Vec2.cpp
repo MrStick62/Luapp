@@ -22,6 +22,20 @@ int Vec2::New(lua_State* LuauState)
    return 1;
 }
 
+int Vec2::Lerp(lua_State* LuauState)
+{
+   Vec2 V1 = Vec2::LuauCheck(LuauState, 1);
+   Vec2 V2 = Vec2::LuauCheck(LuauState, 2);
+   float T = luaL_checknumber(LuauState, 3);
+
+   Vec2 Result;
+   Result.X = V1.X + (V2.X - V1.X) * T;
+   Result.Y = V1.Y + (V2.Y - V1.Y) * T;
+   Result.LuauPush(LuauState);
+
+   return 1;
+}
+
 int Vec2::__add(lua_State* LuauState)
 {
    Vec2 Self = Vec2::LuauCheck(LuauState, 1);
@@ -125,6 +139,7 @@ Vec2 Vec2::operator/(float Value)
 
 luaL_Reg Vec2::Functions[] = {
    { "New", New },
+   { "Lerp", Lerp },
 };
 
 luaL_Reg Vec2::MetaFunctions[] = {

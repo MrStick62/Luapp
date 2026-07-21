@@ -34,6 +34,7 @@ end
 
 declare class Vec2_Class
     New: (X: number, Y: number) -> Vec2
+    Lerp: (V1: Vec2, V2: Vec2, T: number) -> Vec2
 end
 
 declare Vec2: Vec2_Class
@@ -727,6 +728,7 @@ declare class Gui_Class
     --- The first value returned is the edited input string
     --- The second value is true if edited this frame
 	InputText: (Label: string, Input: string, Flags: GuiInputTextFlags?) -> (string, boolean)
+    InputTextWithHint: (Label: string, Hint: string, Input: string, Flags: GuiInputTextFlags?) -> (string, boolean)
 	InputTextMultiline: (Label: string, Input: string, Size: Vec2?, Flags: GuiInputTextFlags?) -> (string, boolean)
     --- Input text for editing numbers
 	InputFloat: (Label: string, Value: number, Precision: number?, Flags: GuiInputTextFlags?) -> (number, boolean)
@@ -737,6 +739,8 @@ declare class Gui_Class
 	SmallButton: (Label: string) -> boolean
 	InvisibleButton: (ID: string, Size: Vec2, Flags: GuiButtonFlags?) -> boolean
 	Checkbox: (Label: string, Checked: boolean) -> boolean
+
+    IsItemHovered: () -> boolean
 
 	Selectable: (Label: string, Selected: boolean, Flags: GuiSelectableFlags?, Size: Vec2?) -> boolean
 
@@ -753,7 +757,7 @@ declare class Gui_Class
 	GetCurrentFont: () -> Font
 	SetFont: (Font: Font) -> ()
 
-	PushFont: (Font: Font, Size: number?) -> ()
+	PushFont: (Font: Font?, Size: number?) -> ()
 	PopFont: () -> ()
 
 	GetCurrentStyle: () -> GuiStyle
@@ -785,6 +789,10 @@ declare Gui: Gui_Class
 declare class Window_Class
     GetSize: () -> Vec2
     SetSize: (Size: Vec2) -> ()
+    SetSizeLimits: (Min: Vec2?, Max: Vec2?) -> ()
+
+    SetTitle: (Title: string) -> ()
+
     Close: () -> ()
 end
 

@@ -101,6 +101,7 @@ private:
    static int CalcTextSize(lua_State* LuauState);
 
    static int InputText(lua_State* LuauState);
+   static int InputTextWithHint(lua_State* LuauState);
    static int InputTextMultiline(lua_State* LuauState);
    static int InputFloat(lua_State* LuauState);
    static int InputInt(lua_State* LuauState);
@@ -109,6 +110,8 @@ private:
    static int SmallButton(lua_State* LuauState);
    static int InvisibleButton(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
+
+   static int IsItemHovered(lua_State* LuauState);
 
    static int Selectable(lua_State* LuauState);
 

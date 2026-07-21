@@ -28,6 +28,7 @@ private:
 
    // Functions
    static int New(lua_State* LuauState);
+   static int Lerp(lua_State* LuauState);
 
    // Meta functions
    static int __add(lua_State* LuauState);

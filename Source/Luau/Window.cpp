@@ -34,6 +34,28 @@ int Window::SetSize(lua_State* LuauState)
    return 0;
 }
 
+int Window::SetSizeLimits(lua_State* LuauState)
+{
+   Vec2 Min(GLFW_DONT_CARE, GLFW_DONT_CARE);
+   Vec2::LuauOpt(LuauState, 1, &Min);
+
+   Vec2 Max(GLFW_DONT_CARE, GLFW_DONT_CARE);
+   Vec2::LuauOpt(LuauState, 2, &Max);
+
+   glfwSetWindowSizeLimits(WindowRef, Min.X, Min.Y, Max.X, Max.Y);
+
+   return 0;
+}
+
+int Window::SetTitle(lua_State* LuauState)
+{
+   const char* Name = luaL_checkstring(LuauState, 1);
+
+   glfwSetWindowTitle(WindowRef, Name);
+
+   return 0;
+}
+
 int Window::Close(lua_State* LuauState)
 {
    glfwSetWindowShouldClose(WindowRef, true);
@@ -51,6 +73,10 @@ void Window::SetCurrentWindow(GLFWwindow *NewWindow)
 luaL_Reg Window::Functions[] = {
    { "GetSize", GetSize },
    { "SetSize", SetSize },
+   { "SetSizeLimits", SetSizeLimits },
+
+   { "SetTitle", SetTitle },
+
    { "Close", Close },
 };
 
