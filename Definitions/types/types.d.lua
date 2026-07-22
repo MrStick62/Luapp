@@ -754,6 +754,16 @@ declare class Gui_Class
 
 	PlotLines: (Label: string, Values: { number }, OverlayText: string?, Size: Vec2?) -> ()
 
+    -- Update the flags later son
+    BeginDragDropSource: (Flags: Flags?) -> boolean
+    SetDragDropPayload: <T>(Type: string, Data: T, Flags: Flags) -> boolean
+    EndDragDropSource: () -> ()
+
+    BeginDragDropTarget: () -> ()
+    AcceptDragDropPayload: <T>(Type: string, Flags: Flags) -> T
+    EndDragDropTarget: () -> ()
+    GetDragDropPayload: <T>() -> T
+
 	GetCurrentFont: () -> Font
 	SetFont: (Font: Font) -> ()
 

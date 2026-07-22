@@ -122,6 +122,16 @@ private:
 
    static int PlotLines(lua_State* LuauState);
 
+   static int BeginDragDropSource(lua_State* LuauState);
+   static int SetDragDropPayload(lua_State* LuauState);
+   static int EndDragDropSource(lua_State* LuauState);
+
+   static int BeginDragDropTarget(lua_State* LuauState);
+   static int AcceptDragDropPayload(lua_State* LuauState);
+   static int EndDragDropTarget(lua_State* LuauState);
+
+   static int GetDragDropPayload(lua_State* LuauState);
+
    static void PushStyle(lua_State* LuauState, const ImGuiStyle& Style);
    static ImGuiStyle CheckStyle(lua_State* LuauState, int Index);
 
@@ -173,6 +183,7 @@ private:
 
 public:
    static void LoadGlobal(lua_State* LuauState);
+   static void HandleDragDrop(lua_State* LuauState);
 };
 
 }

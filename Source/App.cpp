@@ -115,4 +115,6 @@ void App::OnGui(float DeltaTime)
 
    lua_pushnumber(LuauState, DeltaTime);
    lua_pcall(LuauState, 1, 0, 0);
+
+   Luau::Gui::HandleDragDrop(LuauState);
 }

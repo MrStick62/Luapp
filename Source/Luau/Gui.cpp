@@ -1,6 +1,7 @@
 #include "Gui.h"
 
 #include <array>
+#include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <string.h>
@@ -903,6 +904,83 @@ int Gui::PlotLines(lua_State* LuauState)
    return 0;
 }
 
+int Gui::BeginDragDropSource(lua_State* LuauState)
+{
+   ImGuiDragDropFlags Flags = luaL_optinteger(LuauState, 1, 0);
+
+   lua_pushboolean(LuauState, ImGui::BeginDragDropSource(Flags));
+
+   return 1;
+}
+
+int Gui::SetDragDropPayload(lua_State* LuauState)
+{
+   const char* Type = luaL_checkstring(LuauState, 1);
+
+   lua_pushvalue(LuauState, 2);
+   int DataIndex = lua_ref(LuauState, -1);
+
+   ImGuiCond Cond = luaL_checkinteger(LuauState, 3);
+
+   bool Success = ImGui::SetDragDropPayload(Type, &DataIndex, sizeof(DataIndex), Cond);
+   if (!Success)
+   {
+      lua_unref(LuauState, DataIndex);
+   }
+
+   lua_pushboolean(LuauState, Success);
+
+   return 1;
+}
+
+int Gui::EndDragDropSource(lua_State* LuauState)
+{
+   ImGui::EndDragDropSource();
+
+   return 0;
+}
+
+int Gui::BeginDragDropTarget(lua_State* LuauState)
+{
+   ImGui::BeginDragDropTarget();
+
+   return 0;
+}
+
+int Gui::AcceptDragDropPayload(lua_State* LuauState)
+{
+   const char* Type = luaL_checkstring(LuauState, 1);
+   ImGuiDragDropFlags Flags = luaL_checkinteger(LuauState, 2);
+
+   const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload(Type, Flags);
+
+   int DataIndex = *static_cast<const int*>(Payload->Data);
+
+   lua_getref(LuauState, DataIndex);
+   // Unreferenced by HandleDragDrop
+
+   return 1;
+}
+
+int Gui::EndDragDropTarget(lua_State* LuauState)
+{
+   ImGui::EndDragDropTarget();
+
+   return 0;
+}
+
+int Gui::GetDragDropPayload(lua_State* LuauState)
+{
+   const ImGuiPayload* Payload = ImGui::GetDragDropPayload();
+
+   int Data = *static_cast<const int*>(Payload->Data);
+
+   lua_getref(LuauState, Data);
+
+   return 1;
+}
+
+
 void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
 {
    lua_createtable(LuauState, 0, 2);
@@ -1272,6 +1350,15 @@ luaL_Reg Gui::Functions[] = {
    { "ColorEdit", ColorEdit },
 
    { "PlotLines", PlotLines },
+
+   { "BeginDragDropSource", BeginDragDropSource },
+   { "SetDragDropPayload", SetDragDropPayload },
+   { "EndDragDropSource", EndDragDropSource },
+
+   { "BeginDragDropTarget", BeginDragDropTarget },
+   { "AcceptDragDropPayload", AcceptDragDropPayload },
+   { "EndDragDropTarget", EndDragDropTarget },
+   { "GetDragDropPayload", GetDragDropPayload },
 
    { "GetCurrentFont", GetCurrentFont },
    { "SetFont", SetFont },
@@ -1659,6 +1746,30 @@ void Gui::LoadGlobal(lua_State* LuauState)
 
    ImGuiIO& IO = ImGui::GetIO();
    IO.IniFilename = nullptr;
+}
+
+void Gui::HandleDragDrop(lua_State* LuauState)
+{
+   static bool WasDragging = false;
+   static int DataIndex = LUA_NOREF;
+
+   const ImGuiPayload* Payload = ImGui::GetDragDropPayload();
+
+   if (WasDragging && !Payload)
+   {
+      if (DataIndex != LUA_NOREF)
+      {
+         lua_unref(LuauState, DataIndex);
+         DataIndex = LUA_NOREF;
+      }
+
+      WasDragging = false;
+   }
+   else if (Payload && !WasDragging)
+   {
+      DataIndex = *static_cast<const int*>(Payload->Data);
+      WasDragging = true;
+   }
 }
 
 }
