@@ -18,7 +18,7 @@ private:
 
    static bool IsLuauArray(lua_State* LuauState, int Index);
    static nlohmann::json ToJsonValue(lua_State* LuauState, int Index);
-   static void LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object);
+   static void LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object, bool IsArray);
 
    static void PushData(lua_State* LuauState, const std::string& Path);
 

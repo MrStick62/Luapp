@@ -118,3 +118,16 @@ void App::OnGui(float DeltaTime)
 
    Luau::Gui::HandleDragDrop(LuauState);
 }
+
+void App::OnExit()
+{
+   lua_getglobal(LuauState, "OnExit");
+
+   if (!lua_isfunction(LuauState, -1))
+   {
+       lua_pop(LuauState, 1);
+       return;
+   }
+
+   lua_pcall(LuauState, 0, 0, 0);
+}

@@ -21,12 +21,6 @@ namespace Luau
 
 bool Config::IsLuauArray(lua_State* LuauState, int Index)
 {
-   lua_pushnil(LuauState);
-   if (!lua_next(LuauState, Index))
-      return false;
-
-   lua_pop(LuauState, Index);
-
    return lua_objlen(LuauState, Index);
 }
 
@@ -39,8 +33,9 @@ nlohmann::json Config::ToJsonValue(lua_State* LuauState, int Index)
    {
       case LUA_TTABLE:
       {
-         OutObject = IsLuauArray(LuauState, Index) ? nlohmann::json::array() : nlohmann::json::object();
-         LuauToJson(LuauState, Index, OutObject);
+         bool IsArray = IsLuauArray(LuauState, Index);
+         OutObject = IsArray ? nlohmann::json::array() : nlohmann::json::object();
+         LuauToJson(LuauState, Index, OutObject, IsArray);
          break;
       }
       case LUA_TNUMBER:
@@ -63,7 +58,7 @@ nlohmann::json Config::ToJsonValue(lua_State* LuauState, int Index)
    return OutObject;
 }
 
-void Config::LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object)
+void Config::LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object, bool IsArray)
 {
    if (Object.is_null())
       return;
@@ -71,22 +66,22 @@ void Config::LuauToJson(lua_State* LuauState, int Index, nlohmann::json& Object)
    Index = lua_absindex(LuauState, Index);
    luaL_checktype(LuauState, Index, LUA_TTABLE);
 
-   if (Object.is_object())
-   {
-      lua_pushnil(LuauState);
-      while (lua_next(LuauState, Index))
-      {
-         Object[lua_tostring(LuauState, -2)] = ToJsonValue(LuauState, -1);
-         lua_pop(LuauState, 1);
-      }
-   }
-   else if (Object.is_array())
+   if (IsArray)
    {
       int Length = lua_objlen(LuauState, Index);
       for (int i = 1; i <= Length; i++)
       {
          lua_rawgeti(LuauState, Index, i);
          Object[i - 1] = ToJsonValue(LuauState, -1);
+         lua_pop(LuauState, 1);
+      }
+   }
+   else
+   {
+      lua_pushnil(LuauState);
+      while (lua_next(LuauState, Index))
+      {
+         Object[lua_tostring(LuauState, -2)] = ToJsonValue(LuauState, -1);
          lua_pop(LuauState, 1);
       }
    }
@@ -151,7 +146,7 @@ void Config::JsonToLuau(lua_State* LuauState, const nlohmann::json& Object)
    {
       for (int i = 1; i <= Object.size(); i++)
       {
-         PushJsonValue(LuauState, Object[i]);
+         PushJsonValue(LuauState, Object[i - 1]);
 
          lua_rawseti(LuauState, -2, i);
       }

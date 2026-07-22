@@ -55,7 +55,16 @@ private:
    static int BeginTabItem(lua_State* LuauState);
    static int EndTabItem(lua_State* LuauState);
 
+   static int BeginTooltip(lua_State* LuauState);
+   static int EndTooltip(lua_State* LuauState);
+   static int SetTooltip(lua_State* LuauState);
+
+   static int OpenPopup(lua_State* LuauState);
+   static int OpenPopupOnItemClick(lua_State* LuauState);
+   static int CloseCurrentPopup(lua_State* LuauState);
+
    static int BeginPopup(lua_State* LuauState);
+   static int BeginPopupModal(lua_State* LuauState);
    static int EndPopup(lua_State* LuauState);
 
    static int BeginTable(lua_State* LuauState);

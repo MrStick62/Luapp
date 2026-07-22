@@ -117,6 +117,8 @@ int main(int argc, char* argv[])
       DrawWindow(Window);
    }
 
+   App::OnExit();
+
    ImGui_ImplOpenGL3_Shutdown();
    ImGui_ImplGlfw_Shutdown();
    

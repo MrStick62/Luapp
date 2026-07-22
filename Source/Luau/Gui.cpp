@@ -266,6 +266,56 @@ int Gui::EndTabItem(lua_State* LuauState)
    return 0;
 }
 
+int Gui::BeginTooltip(lua_State* LuauState)
+{
+   lua_pushboolean(LuauState, ImGui::BeginTooltip());
+
+   return 1;
+}
+
+int Gui::EndTooltip(lua_State* LuauState)
+{
+   ImGui::EndTooltip();
+
+   return 0;
+}
+
+int Gui::SetTooltip(lua_State* LuauState)
+{
+   const char* Text = luaL_checkstring(LuauState, 1);
+
+   ImGui::SetTooltip("%s", Text);
+
+   return 0;
+}
+
+int Gui::OpenPopup(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   ImGuiPopupFlags Flags = luaL_optinteger(LuauState, 2, 0);
+
+   ImGui::OpenPopup(ID, Flags);
+
+   return 0;
+}
+
+int Gui::OpenPopupOnItemClick(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   ImGuiPopupFlags Flags = luaL_optinteger(LuauState, 2, 0);
+
+   ImGui::OpenPopupOnItemClick(ID, Flags);
+
+   return 0;
+}
+
+int Gui::CloseCurrentPopup(lua_State* LuauState)
+{
+   ImGui::CloseCurrentPopup();
+
+   return 0;
+}
+
 int Gui::BeginPopup(lua_State* LuauState)
 {
    const char* ID = luaL_checkstring(LuauState, 1);
@@ -274,6 +324,18 @@ int Gui::BeginPopup(lua_State* LuauState)
    lua_pushboolean(LuauState, ImGui::BeginPopup(ID, Flags));
 
    return 1;
+}
+
+int Gui::BeginPopupModal(lua_State* LuauState)
+{
+   const char* Name = luaL_checkstring(LuauState, 1);
+   int IsOpen = luaL_optboolean(LuauState, 2, -1);
+   ImGuiWindowFlags Flags = luaL_optinteger(LuauState, 3, 0);
+
+   lua_pushboolean(LuauState, ImGui::BeginPopupModal(Name, IsOpen == -1 ? nullptr : (bool*)&IsOpen, Flags));
+   lua_pushboolean(LuauState, IsOpen == -1 ? true : IsOpen);
+
+   return 2;
 }
 
 int Gui::EndPopup(lua_State* LuauState)
@@ -802,7 +864,7 @@ int Gui::IsItemHovered(lua_State* LuauState)
 int Gui::Selectable(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
-   bool Selected = luaL_checkboolean(LuauState, 2);
+   bool Selected = luaL_optboolean(LuauState, 2, false);
    ImGuiSelectableFlags Flags = luaL_optinteger(LuauState, 3, 0);
 
    Vec2 Size(0.0f, 0.0f);
@@ -997,6 +1059,9 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.ChildRounding);
    lua_setfield(LuauState, -2, "ChildRounding");
 
+   lua_pushnumber(LuauState, Style.PopupRounding);
+   lua_setfield(LuauState, -2, "PopupRounding");
+
    Vec2(Style.FramePadding.x, Style.FramePadding.y).LuauPush(LuauState);
    lua_setfield(LuauState, -2, "FramePadding");
 
@@ -1039,6 +1104,10 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
 
    lua_getfield(LuauState, Index, "ChildRounding");
    Style.ChildRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "PopupRounding");
+   Style.PopupRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "FramePadding");
@@ -1284,7 +1353,16 @@ luaL_Reg Gui::Functions[] = {
    { "BeginTabItem", BeginTabItem },
    { "EndTabItem", EndTabItem },
 
+   { "BeginTooltip", BeginTooltip },
+   { "EndTooltip", EndTooltip },
+   { "SetTooltip", SetTooltip },
+
+   { "OpenPopup", OpenPopup },
+   { "OpenPopupOnItemClick", OpenPopupOnItemClick },
+   { "CloseCurrentPopup", CloseCurrentPopup },
+
    { "BeginPopup", BeginPopup },
+   { "BeginPopupModal", BeginPopupModal },
    { "EndPopup", EndPopup },
 
    { "BeginTable", BeginTable },

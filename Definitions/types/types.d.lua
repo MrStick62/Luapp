@@ -256,6 +256,7 @@ export type GuiStyle = {
     FontScaleDpi: number,
 	WindowRounding: number,
 	ChildRounding: number,
+    PopupRounding: number,
     FramePadding: Vec2,
 	FrameRounding: number,
 	ImageRounding: number,
@@ -666,7 +667,16 @@ declare class Gui_Class
 	BeginTabItem: (Label: string, IsOpen: boolean?, Flags: GuiTabItemFlags?) -> (boolean, boolean)
 	EndTabItem: () -> ()
 
-	BeginPopup: (ID: string, Flags: GuiWindowFlags) -> boolean
+    BeginTooltip: () -> boolean
+    EndTooltip: () -> ()
+    SetTooltip: (Text: string) -> ()
+
+    OpenPopup: (ID: string, Flags: Flags?) -> ()
+    OpenPopupOnItemClick: (ID: string, Flags: Flags?) -> ()
+    CloseCurrentPopup: () -> ()
+
+	BeginPopup: (ID: string, Flags: GuiWindowFlags?) -> boolean
+    BeginPopupModal: (Name: string, IsOpen: boolean, Flags: GuiWindowFlags?) -> (boolean, boolean)
 	EndPopup: () -> ()
 
 	BeginTable: (ID: string, Columns: number, Flags: GuiTableFlags?, OuterSize: Vec2?, InnerWidth: number?) -> boolean
@@ -742,7 +752,7 @@ declare class Gui_Class
 
     IsItemHovered: () -> boolean
 
-	Selectable: (Label: string, Selected: boolean, Flags: GuiSelectableFlags?, Size: Vec2?) -> boolean
+	Selectable: (Label: string, Selected: boolean?, Flags: GuiSelectableFlags?, Size: Vec2?) -> boolean
 
 	--- Creates a drop down list of selectable items
 	--- First return value is the new index of the currently selected item
