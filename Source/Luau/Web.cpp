@@ -74,7 +74,8 @@ int Web::ConnectToSystem(lua_State* LuauState)
    std::string Command = std::string(OPEN_WEB_COMMAND) + " AutogenTempLuapp.rdp";
    std::system(Command.data());
 
-   std::this_thread::sleep_for(std::chrono::seconds(1));
+   // Will need to make a new thread so this doesn't pause the entire program
+   //std::this_thread::sleep_for(std::chrono::seconds(1));
 
    std::remove("AutogenTempLuapp.rdp");
 
