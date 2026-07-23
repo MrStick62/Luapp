@@ -16,6 +16,9 @@ private:
    static const std::string EntryPointName;
    static const std::string DirectoryName;
 
+   static float MaxFrameRate;
+   static float IdleFrameRate;
+
 public:
    static void Init(const std::string& Name, GLFWwindow* Window);
 
@@ -26,4 +29,7 @@ public:
 
    static std::string GetName() { return AppName; }
    static std::filesystem::path GetPath() { return Path; }
+
+   static float GetMaxFrameRate() { return MaxFrameRate; };
+   static float GetIdleFrameRate() { return IdleFrameRate; };
 };

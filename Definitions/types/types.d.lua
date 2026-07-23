@@ -231,6 +231,23 @@ end
 
 declare GuiStyleVars: GuiStyleVars_Class
 
+--------------------
+-- Gui directions --
+--------------------
+
+declare class GuiDirection
+end
+
+declare class GuiDirections_Class
+    None: GuiDirection
+    Left: GuiDirection
+    Right: GuiDirection
+    Up: GuiDirection
+    Down: GuiDirection
+end
+
+declare GuiDirections: GuiDirections_Class
+
 ---------------------------------
 -- Gui table background target --
 ---------------------------------
@@ -748,6 +765,7 @@ declare class Gui_Class
 	Button: (Label: string, Size: Vec2?) -> boolean
 	SmallButton: (Label: string) -> boolean
 	InvisibleButton: (ID: string, Size: Vec2, Flags: GuiButtonFlags?) -> boolean
+    ArrowButton: (ID: string, Direction: GuiDirection) -> boolean
 	Checkbox: (Label: string, Checked: boolean) -> boolean
 
     IsItemHovered: () -> boolean

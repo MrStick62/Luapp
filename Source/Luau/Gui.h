@@ -118,6 +118,7 @@ private:
    static int Button(lua_State* LuauState);
    static int SmallButton(lua_State* LuauState);
    static int InvisibleButton(lua_State* LuauState);
+   static int ArrowButton(lua_State* LuauState);
    static int Checkbox(lua_State* LuauState);
 
    static int IsItemHovered(lua_State* LuauState);
@@ -169,6 +170,7 @@ private:
 
    static std::pair<std::string, int> GuiColors[];
    static std::pair<std::string, int> StyleVars[];
+   static std::pair<std::string, int> Directions[];
    static std::pair<std::string, int> TableBgTargets[];
 
    static std::pair<std::string, int> WindowFlags[];

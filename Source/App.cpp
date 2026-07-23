@@ -31,6 +31,9 @@ std::string App::AppName;
 const std::string App::EntryPointName = "Main.luau";
 const std::string App::DirectoryName = "Luapp";
 
+float App::MaxFrameRate = 60.0f;
+float App::IdleFrameRate = 10.0f;
+
 void App::Init(const std::string& Name, GLFWwindow* Window)
 {
    // Set path

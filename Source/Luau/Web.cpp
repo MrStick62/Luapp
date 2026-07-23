@@ -4,6 +4,7 @@
 #include <cctype>
 #include <thread>
 #include <chrono>
+#include <sstream>
 #include <cstdlib>
 #include <fstream>
 #include <algorithm>
@@ -60,26 +61,34 @@ int Web::ConnectToSystem(lua_State* LuauState)
    int ScreenHeight = luaL_optinteger(LuauState, 3, 1080);
    const char* Username = luaL_optstring(LuauState, 4, "");
 
-   std::ofstream File("AutogenTempLuapp.rdp");
+   std::stringstream Content;
 
-   File << "screen mode id:i:2\n";
-   File << "desktopwidth:i:" << ScreenWidth << "\n";
-   File << "desktopheight:i:" << ScreenHeight << "\n";
-   File << "session bpp:i:32\n";
-   File << "full address:s:" << Hostname << "\n";
-   File << "username:s:" << Username << "\n";
+   Content << "screen mode id:i:2\n";
+   Content << "desktopwidth:i:" << ScreenWidth << "\n";
+   Content << "desktopheight:i:" << ScreenHeight << "\n";
+   Content << "session bpp:i:32\n";
+   Content << "full address:s:" << Hostname << "\n";
+   Content << "username:s:" << Username << "\n";
+
+   std::thread Connect(SystemConnect, Content.str());
+   Connect.detach();
+
+   return 0;
+}
+
+void Web::SystemConnect(const std::string& FileContent)
+{
+   std::ofstream File("AutogenTempLuapp.rdp");
+   File << FileContent;
 
    File.close();
 
    std::string Command = std::string(OPEN_WEB_COMMAND) + " AutogenTempLuapp.rdp";
    std::system(Command.data());
-
-   // Will need to make a new thread so this doesn't pause the entire program
-   //std::this_thread::sleep_for(std::chrono::seconds(1));
+   
+   std::this_thread::sleep_for(std::chrono::seconds(1));
 
    std::remove("AutogenTempLuapp.rdp");
-
-   return 0;
 }
 
 luaL_Reg Web::Functions[] = {

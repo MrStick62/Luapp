@@ -129,9 +129,10 @@ int main(int argc, char* argv[])
 
 void DrawWindow(GLFWwindow* Window)
 {
-   static float DeltaTime = 1.0f;
+   static auto LastFrameStart = std::chrono::steady_clock::now();
 
    auto FrameStart = std::chrono::steady_clock::now();
+   double DeltaTime = std::chrono::duration<double>(FrameStart - LastFrameStart).count();
  
    App::Tick(DeltaTime);
 
@@ -150,10 +151,7 @@ void DrawWindow(GLFWwindow* Window)
 
    glfwSwapBuffers(Window);
 
-   auto FrameEnd = std::chrono::steady_clock::now();
-   auto FrameTime = FrameEnd - FrameStart;
-
-   DeltaTime = std::chrono::duration<float>(FrameTime).count();  
+   LastFrameStart = FrameStart;
 }
 
 void FramebufferSizeCallback(GLFWwindow* Window, int Width, int Height)

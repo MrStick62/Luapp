@@ -17,6 +17,8 @@ private:
    static int OpenPage(lua_State* LuauState);
    static int ConnectToSystem(lua_State* LuauState);
 
+   static void SystemConnect(const std::string& FileContent);
+
 public:
    static void LoadGlobal(lua_State* LuauState);
 

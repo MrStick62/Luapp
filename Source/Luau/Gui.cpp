@@ -840,6 +840,16 @@ int Gui::InvisibleButton(lua_State* LuauState)
    return 1;
 }
 
+int Gui::ArrowButton(lua_State* LuauState)
+{
+   const char* ID = luaL_checkstring(LuauState, 1);
+   ImGuiDir Direction = (ImGuiDir)luaL_checkinteger(LuauState, 2);
+
+   lua_pushboolean(LuauState, ImGui::ArrowButton(ID, Direction));
+
+   return 1;
+}
+
 int Gui::Checkbox(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -1422,6 +1432,7 @@ luaL_Reg Gui::Functions[] = {
    { "Button", Button },
    { "SmallButton", SmallButton },
    { "InvisibleButton", InvisibleButton },
+   { "ArrowButton", ArrowButton },
    { "Checkbox", Checkbox },
 
    { "IsItemHovered", IsItemHovered },
@@ -1576,6 +1587,14 @@ std::pair<std::string, int> Gui::StyleVars[] = {
    { "SeparatorTextBorderSize", ImGuiStyleVar_SeparatorTextBorderSize },
    { "SeparatorTextAlign", ImGuiStyleVar_SeparatorTextAlign },
    { "SeparatorTextPadding", ImGuiStyleVar_SeparatorTextPadding },
+};
+
+std::pair<std::string, int> Gui::Directions[] = {
+   { "None", ImGuiDir_None },
+   { "Left", ImGuiDir_Left },
+   { "Right", ImGuiDir_Right },
+   { "Up", ImGuiDir_Up },
+   { "Down", ImGuiDir_Down },
 };
 
 std::pair<std::string, int> Gui::TableBgTargets[] = {
@@ -1814,6 +1833,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
    LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Gui");
    LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors");
    LuauHelp::SetupEnumGlobal(LuauState, StyleVars, std::size(StyleVars), "GuiStyleVars");
+   LuauHelp::SetupEnumGlobal(LuauState, Directions, std::size(Directions), "GuiDirections");
    LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
    LuauHelp::SetupEnumGlobal(LuauState, WindowFlags, std::size(WindowFlags), "GuiWindowFlags");
    LuauHelp::SetupEnumGlobal(LuauState, ChildFlags, std::size(ChildFlags), "GuiChildFlags");
