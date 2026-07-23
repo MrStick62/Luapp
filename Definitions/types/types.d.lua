@@ -766,13 +766,13 @@ declare class Gui_Class
 
     -- Update the flags later son
     BeginDragDropSource: (Flags: Flags?) -> boolean
-    SetDragDropPayload: <T>(Type: string, Data: T, Flags: Flags) -> boolean
+    SetDragDropPayload: <T>(Type: string, Data: T, Flags: Flags?) -> boolean
     EndDragDropSource: () -> ()
 
-    BeginDragDropTarget: () -> ()
-    AcceptDragDropPayload: <T>(Type: string, Flags: Flags) -> T
+    BeginDragDropTarget: () -> boolean
+    AcceptDragDropPayload: <T>(Type: string, Flags: Flags?) -> T?
     EndDragDropTarget: () -> ()
-    GetDragDropPayload: <T>() -> T
+    GetDragDropPayload: <T>() -> T?
 
 	GetCurrentFont: () -> Font
 	SetFont: (Font: Font) -> ()

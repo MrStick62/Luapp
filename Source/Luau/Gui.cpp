@@ -980,14 +980,15 @@ int Gui::SetDragDropPayload(lua_State* LuauState)
    const char* Type = luaL_checkstring(LuauState, 1);
 
    lua_pushvalue(LuauState, 2);
-   int DataIndex = lua_ref(LuauState, -1);
+   lua_setglobal(LuauState, "__PAYLOAD_INTERNAL");
 
-   ImGuiCond Cond = luaL_checkinteger(LuauState, 3);
+   ImGuiCond Cond = luaL_optinteger(LuauState, 3, 0);
 
-   bool Success = ImGui::SetDragDropPayload(Type, &DataIndex, sizeof(DataIndex), Cond);
+   bool Success = ImGui::SetDragDropPayload(Type, (void*)0, 0, Cond);
    if (!Success)
    {
-      lua_unref(LuauState, DataIndex);
+      lua_pushnil(LuauState);
+      lua_setglobal(LuauState, "__PAYLOAD_INTERNAL");
    }
 
    lua_pushboolean(LuauState, Success);
@@ -1004,22 +1005,24 @@ int Gui::EndDragDropSource(lua_State* LuauState)
 
 int Gui::BeginDragDropTarget(lua_State* LuauState)
 {
-   ImGui::BeginDragDropTarget();
+   lua_pushboolean(LuauState, ImGui::BeginDragDropTarget());
 
-   return 0;
+   return 1;
 }
 
 int Gui::AcceptDragDropPayload(lua_State* LuauState)
 {
    const char* Type = luaL_checkstring(LuauState, 1);
-   ImGuiDragDropFlags Flags = luaL_checkinteger(LuauState, 2);
+   ImGuiDragDropFlags Flags = luaL_optinteger(LuauState, 2, 0);
 
    const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload(Type, Flags);
+   if (!Payload)
+   {
+      lua_pushnil(LuauState);
+      return 1;
+   }
 
-   int DataIndex = *static_cast<const int*>(Payload->Data);
-
-   lua_getref(LuauState, DataIndex);
-   // Unreferenced by HandleDragDrop
+   lua_getglobal(LuauState, "__PAYLOAD_INTERNAL");
 
    return 1;
 }
@@ -1033,11 +1036,14 @@ int Gui::EndDragDropTarget(lua_State* LuauState)
 
 int Gui::GetDragDropPayload(lua_State* LuauState)
 {
-   const ImGuiPayload* Payload = ImGui::GetDragDropPayload();
-
-   int Data = *static_cast<const int*>(Payload->Data);
-
-   lua_getref(LuauState, Data);
+   if (ImGui::GetDragDropPayload())
+   {
+      lua_getglobal(LuauState, "__PAYLOAD_INTERNAL");
+   }
+   else 
+   {
+      lua_pushnil(LuauState);
+   }
 
    return 1;
 }
@@ -1828,26 +1834,26 @@ void Gui::LoadGlobal(lua_State* LuauState)
 
 void Gui::HandleDragDrop(lua_State* LuauState)
 {
-   static bool WasDragging = false;
+   /*
    static int DataIndex = LUA_NOREF;
+   static int WasPayload = false;
+
+   if (WasPayload)
+   {
+      lua_unref(LuauState, DataIndex);
+      DataIndex = LUA_NOREF;
+
+      WasPayload = false;
+      std::cout << "Ref cleared" << std::endl;
+   }
 
    const ImGuiPayload* Payload = ImGui::GetDragDropPayload();
-
-   if (WasDragging && !Payload)
-   {
-      if (DataIndex != LUA_NOREF)
-      {
-         lua_unref(LuauState, DataIndex);
-         DataIndex = LUA_NOREF;
-      }
-
-      WasDragging = false;
-   }
-   else if (Payload && !WasDragging)
+   if (Payload)
    {
       DataIndex = *static_cast<const int*>(Payload->Data);
-      WasDragging = true;
+      WasPayload = true;
    }
+   */
 }
 
 }
