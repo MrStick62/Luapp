@@ -160,6 +160,7 @@ private:
    static int PushStyleColor(lua_State* LuauState);
    static int PopStyleColor(lua_State* LuauState);
    static int GetStyleColorName(lua_State* LuauState);
+   static int GetStyleColorValue(lua_State* LuauState);
 
    static int PushStyleVar(lua_State* LuauState);
    static int PopStyleVar(lua_State* LuauState);

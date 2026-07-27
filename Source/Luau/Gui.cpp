@@ -1264,6 +1264,17 @@ int Gui::GetStyleColorName(lua_State* LuauState)
    return 1;
 }
 
+int Gui::GetStyleColorValue(lua_State* LuauState)
+{
+   ImGuiCol Index = luaL_checkinteger(LuauState, 1) - 1;
+   
+   ImVec4 OutColor = ImGui::GetStyleColorVec4(Index);
+
+   Color(OutColor.x, OutColor.y, OutColor.z, OutColor.w).LuauPush(LuauState);
+   
+   return 1;
+}
+
 int Gui::PushStyleVar(lua_State* LuauState)
 {
    ImGuiStyleVar Index = luaL_checkinteger(LuauState, 1);
@@ -1470,6 +1481,7 @@ luaL_Reg Gui::Functions[] = {
    { "PushStyleColor", PushStyleColor },
    { "PopStyleColor", PopStyleColor },
    { "GetStyleColorName", GetStyleColorName },
+   { "GetStyleColorValue", GetStyleColorValue },
 
    { "PushStyleVar", PushStyleVar },
    { "PopStyleVar", PopStyleVar },

@@ -24,10 +24,22 @@ namespace Luau
 
 int Image::New(lua_State* LuauState)
 {
-   const char* FilePath = luaL_checkstring(LuauState, 1);
-   std::filesystem::path FullPath = App::GetPath() / FilePath;
+   std::filesystem::path FilePath = luaL_checkstring(LuauState, 1);
+   std::filesystem::path OutPath = luaL_optstring(LuauState, 2, "");
 
-   std::string FileString = FileHelp::ReadWholeFile(FullPath.string());
+   if (FilePath.is_relative())
+      FilePath = App::GetPath() / FilePath;
+
+   if (OutPath.string().length() > 0 && OutPath.is_relative())
+      OutPath = App::GetPath() / OutPath;
+
+   if (!std::filesystem::exists(FilePath))
+   {
+      lua_pushnil(LuauState);
+      return 1;
+   }
+
+   std::string FileString = FileHelp::ReadWholeFile(FilePath.string());
    void* FileData = FileString.data();
    size_t FileSize = FileString.length();
 
@@ -35,8 +47,13 @@ int Image::New(lua_State* LuauState)
 
    if (!LoadTextureFromMemory(FileData, FileSize, &ID))
    {
-      luaL_error(LuauState, "Failed to load image \"%s\"!", FilePath); 
-      return 0;
+      lua_pushnil(LuauState);
+      return 1;
+   }
+
+   if (OutPath.string().length() > 0)
+   {
+      std::filesystem::copy_file(FilePath, OutPath);
    }
 
    lua_createtable(LuauState, 0, 1);
@@ -66,16 +83,13 @@ int Image::Destroy(lua_State* LuauState)
    return 0;
 }
 
-int Image::__gc(lua_State* LuauState)
-{
-   Destroy(LuauState);
-
-   return 0;
-}
-
 int Image::GetSize(lua_State* LuauState)
 {
    luaL_checktype(LuauState, 1, LUA_TTABLE);
+   lua_getfield(LuauState, 1, "ID");
+   GLuint ImageID = luaL_checkinteger(LuauState, -1);
+
+   glBindTexture(GL_TEXTURE_2D, ImageID);
 
    int Width, Height;
    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &Width);
@@ -117,7 +131,6 @@ luaL_Reg Image::Functions[] = {
 };
 
 luaL_Reg Image::MetaFunctions[] = {
-   { "__gc", __gc },
    { "Destroy", Destroy },
    { "GetSize", GetSize },
 };

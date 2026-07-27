@@ -79,7 +79,8 @@ declare class Image
 end
 
 declare class Image_Class
-    New: (FilePath: string) -> Image
+    --- Use out path if you want to copy the file to a permanent location
+    New: (FilePath: string, OutPath: string?) -> Image?
 end
 
 declare Image: Image_Class
@@ -808,6 +809,7 @@ declare class Gui_Class
 	PushStyleColor: (Index: GuiColor, Color: Color) -> ()
 	PopStyleColor: (Count: number?) -> ()
 	GetStyleColorName: (Index: GuiColor) -> string
+    GetStyleColorValue: (Index: GuiColor) -> Color
 
 	PushStyleVar: (Index: GuiStyleVar, Value: number) -> ()
 	PushStyleVar: (Index: GuiStyleVar, Value: Vec2) -> ()

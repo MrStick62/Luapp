@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 #include <algorithm>
 
 #include <lua.h>
@@ -32,8 +33,8 @@ namespace Luau
 bool Web::IsURL(const std::string& URL)
 {
    bool ContainsPrefix = URL.starts_with("https://") || URL.starts_with("http://");
-   bool NoWhitespace = std::any_of(URL.begin(), URL.end(), [](unsigned char c) { return std::isspace(c); });
-   return ContainsPrefix && NoWhitespace;
+   //bool NoWhitespace = std::any_of(URL.begin(), URL.end(), [](unsigned char c) { return std::isspace(c); });
+   return ContainsPrefix; //&& NoWhitespace;
 }
 
 int Web::OpenPage(lua_State* LuauState)
@@ -46,7 +47,7 @@ int Web::OpenPage(lua_State* LuauState)
       return 1;
    }
 
-   std::string Command = std::string(OPEN_WEB_COMMAND) + " " + URL;
+   std::string Command = std::string(OPEN_WEB_COMMAND) + " \"" + URL + "\"";
    std::system(Command.data());
 
    lua_pushboolean(LuauState, true);
