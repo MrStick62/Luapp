@@ -826,6 +826,19 @@ declare Gui: Gui_Class
 -- Window class --
 ------------------
 
+declare class File_Class
+    --- Opens a file explorer dialog to select a file from
+    --- First return value is whether the check is completed (file is selected or dialog is closed)
+    --- Second return value returns the path of the selected file if a file was selected
+    OpenDialog: (ID: string, Filters: { [string]: string }) -> (boolean, string?)
+end
+
+declare File: File_Class
+
+------------------
+-- Window class --
+------------------
+
 declare class Window_Class
     GetSize: () -> Vec2
     SetSize: (Size: Vec2) -> ()

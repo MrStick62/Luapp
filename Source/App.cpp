@@ -15,6 +15,7 @@
 #include "Luau/Web.h"
 #include "Luau/Vec2.h"
 #include "Luau/Font.h"
+#include "Luau/File.h"
 #include "Luau/Color.h"
 #include "Luau/Flags.h"
 #include "Luau/Input.h"
@@ -55,6 +56,7 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
    Luau::Gui::LoadGlobal(LuauState);
    Luau::Vec2::LoadGlobal(LuauState);
    Luau::Font::LoadGlobal(LuauState);
+   Luau::File::LoadGlobal(LuauState);
    Luau::Color::LoadGlobal(LuauState);
    Luau::Flags::LoadGlobal(LuauState);
    Luau::Input::LoadGlobal(LuauState);

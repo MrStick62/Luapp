@@ -23,6 +23,7 @@ add_subdirectory(External/glad)
 add_subdirectory(External/imgui)
 add_subdirectory(External/luau)
 add_subdirectory(External/json)
+add_subdirectory(External/nativefiledialog-extended)
 
 # Executable setup
 add_executable(Luapp)
@@ -42,6 +43,7 @@ target_sources(Luapp
       Source/Luau/Web.cpp
       Source/Luau/Vec2.cpp
       Source/Luau/Font.cpp
+      Source/Luau/File.cpp
       Source/Luau/Color.cpp
       Source/Luau/Flags.cpp
       Source/Luau/Input.cpp
@@ -55,6 +57,7 @@ target_sources(Luapp
 
 target_link_libraries(Luapp 
    PRIVATE 
+      nfd
       glfw
       glad
       imgui
