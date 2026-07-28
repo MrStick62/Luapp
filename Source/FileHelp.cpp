@@ -10,7 +10,7 @@
 #elif __APPLE__
 #include <mach-o/dyld.h>
 #elif __linux__
-
+#include <unistd.h>
 #endif
 
 namespace FileHelp 
