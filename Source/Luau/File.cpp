@@ -1,7 +1,6 @@
 #include "File.h"
 
 #include <array>
-#include <thread>
 #include <cstring>
 #include <iostream>
 
@@ -19,38 +18,12 @@ namespace Luau
 
 int File::OpenDialog(lua_State* LuauState)
 {
-   const char* ID = luaL_checkstring(LuauState, 1);
-
-   if (OpenDialogs.contains(ID))
-   {
-      const char* Path = OpenDialogs[ID];
-      if (Path == std::string("\\"))
-      {
-         lua_pushboolean(LuauState, true);
-         lua_pushnil(LuauState);
-         OpenDialogs.erase(ID);
-      }
-      else if (strlen(Path))
-      {
-         lua_pushboolean(LuauState, true);
-         lua_pushstring(LuauState, Path);
-         OpenDialogs.erase(ID);
-      }
-      else
-      {
-         lua_pushboolean(LuauState, false);
-         lua_pushnil(LuauState);
-      }
-
-      return 2;
-   }
-
-   luaL_checktype(LuauState, 2, LUA_TTABLE);
+   luaL_checktype(LuauState, 1, LUA_TTABLE);
 
    std::vector<std::pair<const char*, const char*>> Filters;
 
    lua_pushnil(LuauState);
-   while (lua_next(LuauState, 2))
+   while (lua_next(LuauState, 1))
    {
       const char* Name = luaL_checkstring(LuauState, -2);
       const char* Extensions = luaL_checkstring(LuauState, -1);
@@ -59,22 +32,6 @@ int File::OpenDialog(lua_State* LuauState)
 
       lua_pop(LuauState, 1);
    }
-
-   std::thread Dialog(DialogThread, std::string(ID), Filters);
-
-   Dialog.detach();
-
-   lua_pushboolean(LuauState, false);
-   lua_pushnil(LuauState);
-   return 2;
-}
-
-void File::DialogThread(std::string ID, std::vector<std::pair<const char*, const char*>> Filters)
-{
-   if (OpenDialogs.contains(ID))  
-      return;
-
-   OpenDialogs.emplace(ID, "");
 
    size_t FiltersSize = Filters.size();
 
@@ -96,22 +53,22 @@ void File::DialogThread(std::string ID, std::vector<std::pair<const char*, const
    switch (Result)
    {
    case NFD_OKAY:
-      OpenDialogs[ID] = OutPath;
+      lua_pushstring(LuauState, OutPath);
       break;
    case NFD_CANCEL:
-      OpenDialogs[ID] = "\\";
+      lua_pushnil(LuauState);
       break;
    default: 
       std::cerr << "NFD Error: " << NFD_GetError();
       break;
    }
+
+   return 1;
 }
 
 luaL_Reg File::Functions[] = {
    { "OpenDialog", OpenDialog },
 };
-
-std::unordered_map<std::string, const char*> File::OpenDialogs;
 
 void File::LoadGlobal(lua_State* LuauState)
 {

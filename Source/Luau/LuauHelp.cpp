@@ -20,13 +20,13 @@ void SetupFunctionsGlobal(lua_State* LuauState, luaL_Reg Functions[], size_t Siz
    lua_setglobal(LuauState, GlobalName);
 }
 
-void SetupEnumGlobal(lua_State* LuauState, std::pair<std::string, int> Table[], size_t Size, const char* GlobalName)
+void SetupEnumGlobal(lua_State* LuauState, std::pair<std::string, int> Table[], size_t Size, const char* GlobalName, int Offset)
 {
    lua_createtable(LuauState, 0, Size);
 
    for (int i = 0; i < Size; i++)
    {
-      lua_pushinteger(LuauState, Table[i].second);
+      lua_pushinteger(LuauState, Table[i].second + Offset);
       lua_setfield(LuauState, -2, Table[i].first.data());
    }
 

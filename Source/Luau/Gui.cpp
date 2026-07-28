@@ -1238,7 +1238,7 @@ int Gui::SetStyle(lua_State* LuauState)
 
 int Gui::PushStyleColor(lua_State* LuauState)
 {
-   ImGuiCol Index = luaL_checkinteger(LuauState, 1);
+   ImGuiCol Index = luaL_checkinteger(LuauState, 1) -1;
    Color Color = Color::LuauCheck(LuauState, 2);
 
    ImGui::PushStyleColor(Index, ImVec4(Color.R, Color.G, Color.B, Color.A));
@@ -1843,7 +1843,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
 {
    // Setup globals
    LuauHelp::SetupFunctionsGlobal(LuauState, Functions, std::size(Functions), "Gui");
-   LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors");
+   LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors", 1);
    LuauHelp::SetupEnumGlobal(LuauState, StyleVars, std::size(StyleVars), "GuiStyleVars");
    LuauHelp::SetupEnumGlobal(LuauState, Directions, std::size(Directions), "GuiDirections");
    LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
