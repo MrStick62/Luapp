@@ -61,6 +61,13 @@ int Gui::SetNextWindowPos(lua_State* LuauState)
    return 0;
 }
 
+int Gui::SetNextWindowFocus(lua_State* LuauState)
+{
+   ImGui::SetNextWindowFocus();
+
+   return 0;
+}
+
 int Gui::SetNextWindowSizeConstraints(lua_State* LuauState)
 {
    Vec2 Min = Vec2::LuauCheck(LuauState, 1);
@@ -1090,6 +1097,9 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.ChildRounding);
    lua_setfield(LuauState, -2, "ChildRounding");
 
+   lua_pushnumber(LuauState, Style.ChildBorderSize);
+   lua_setfield(LuauState, -2, "ChildBorderSize");
+
    lua_pushnumber(LuauState, Style.PopupRounding);
    lua_setfield(LuauState, -2, "PopupRounding");
 
@@ -1183,6 +1193,10 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
 
    lua_getfield(LuauState, Index, "ChildRounding");
    Style.ChildRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "ChildBorderSize");
+   Style.ChildBorderSize = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "PopupRounding");
@@ -1457,6 +1471,7 @@ luaL_Reg Gui::Functions[] = {
 
    { "SetNextWindowSize", SetNextWindowSize },
    { "SetNextWindowPos", SetNextWindowPos },
+   { "SetNextWindowFocus", SetNextWindowFocus },
 
    { "SetNextWindowSizeConstraints", SetNextWindowSizeConstraints },
 

@@ -276,6 +276,7 @@ export type GuiStyle = {
 	WindowRounding: number,
     WindowBorderSize: number,
 	ChildRounding: number,
+    ChildBorderSize: number,
     PopupRounding: number,
     PopupBorderSize: number,
     FramePadding: Vec2,
@@ -644,6 +645,8 @@ declare class Gui_Class
 	SetNextWindowPos: (Size: Vec2) -> ()
     --- Call before Begin() to specify the minimum and maximum size of the next window
 	SetNextWindowSizeConstraints: (Min: Vec2, Max: Vec2) -> ()
+
+    SetNextWindowFocus: () -> ()
 
     --- These horrible functions killed my family back in 2005
     --- You probably want to use GetContentRegionAvail() and GetCursorScreenPos() instead
