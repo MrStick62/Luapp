@@ -1078,8 +1078,14 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.FontScaleDpi);
    lua_setfield(LuauState, -2, "FontScaleDpi");
 
+   Vec2(Style.WindowPadding.x, Style.WindowPadding.y).LuauPush(LuauState);
+   lua_setfield(LuauState, -2, "WindowPadding");
+
    lua_pushnumber(LuauState, Style.WindowRounding);
    lua_setfield(LuauState, -2, "WindowRounding");
+
+   lua_pushnumber(LuauState, Style.WindowBorderSize);
+   lua_setfield(LuauState, -2, "WindowBorderSize");
 
    lua_pushnumber(LuauState, Style.ChildRounding);
    lua_setfield(LuauState, -2, "ChildRounding");
@@ -1087,11 +1093,29 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.PopupRounding);
    lua_setfield(LuauState, -2, "PopupRounding");
 
+   lua_pushnumber(LuauState, Style.PopupBorderSize);
+   lua_setfield(LuauState, -2, "PopupBorderSize");
+
    Vec2(Style.FramePadding.x, Style.FramePadding.y).LuauPush(LuauState);
    lua_setfield(LuauState, -2, "FramePadding");
 
    lua_pushnumber(LuauState, Style.FrameRounding);
    lua_setfield(LuauState, -2, "FrameRounding");
+
+   lua_pushnumber(LuauState, Style.FrameBorderSize);
+   lua_setfield(LuauState, -2, "FrameBorderSize");
+
+   Vec2(Style.FramePadding.x, Style.FramePadding.y).LuauPush(LuauState);
+   lua_setfield(LuauState, -2, "FramePadding");
+
+   Vec2(Style.ItemSpacing.x, Style.ItemSpacing.y).LuauPush(LuauState);
+   lua_setfield(LuauState, -2, "ItemSpacing");
+
+   Vec2(Style.ItemInnerSpacing.x, Style.ItemInnerSpacing.y).LuauPush(LuauState);
+   lua_setfield(LuauState, -2, "ItemInnerSpacing");
+
+   lua_pushnumber(LuauState, Style.IndentSpacing);
+   lua_setfield(LuauState, -2, "IndentSpacing");
 
    lua_pushnumber(LuauState, Style.ScrollbarRounding);
    lua_setfield(LuauState, -2, "ScrollbarRounding");
@@ -1144,8 +1168,17 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    Style.FontScaleDpi = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
+   lua_getfield(LuauState, Index, "WindowPadding");
+   Vec2 WindowPadding = Vec2::LuauCheck(LuauState, -1);
+   Style.FramePadding = ImVec2(WindowPadding.X, WindowPadding.Y);
+   lua_pop(LuauState, 1);
+
    lua_getfield(LuauState, Index, "WindowRounding");
    Style.WindowRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "WindowBorderSize");
+   Style.WindowBorderSize = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "ChildRounding");
@@ -1156,13 +1189,35 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    Style.PopupRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
+   lua_getfield(LuauState, Index, "PopupBorderSize");
+   Style.PopupBorderSize = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
    lua_getfield(LuauState, Index, "FramePadding");
    Vec2 FramePadding = Vec2::LuauCheck(LuauState, -1);
    Style.FramePadding = ImVec2(FramePadding.X, FramePadding.Y);
    lua_pop(LuauState, 1);
 
+   lua_getfield(LuauState, Index, "ItemSpacing");
+   Vec2 ItemSpacing = Vec2::LuauCheck(LuauState, -1);
+   Style.ItemSpacing = ImVec2(ItemSpacing.X, ItemSpacing.Y);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "ItemInnerSpacing");
+   Vec2 ItemInnerSpacing = Vec2::LuauCheck(LuauState, -1);
+   Style.ItemInnerSpacing = ImVec2(ItemInnerSpacing.X, ItemInnerSpacing.Y);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "IndentSpacing");
+   Style.IndentSpacing = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
    lua_getfield(LuauState, Index, "FrameRounding");
    Style.FrameRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "FrameBorderSize");
+   Style.FrameBorderSize = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "ScrollbarRounding");
