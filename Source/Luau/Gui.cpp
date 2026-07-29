@@ -546,6 +546,15 @@ int Gui::Bullet(lua_State* LuauState)
    return 0;
 }
 
+int Gui::Dummy(lua_State* LuauState)
+{
+   Vec2 Size = Vec2::LuauCheck(LuauState, 1);
+
+   ImGui::Dummy(ImVec2(Size.X, Size.Y));
+
+   return 0;
+}
+
 int Gui::CollapsingHeader(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -1084,8 +1093,29 @@ void Gui::PushStyle(lua_State* LuauState, const ImGuiStyle& Style)
    lua_pushnumber(LuauState, Style.FrameRounding);
    lua_setfield(LuauState, -2, "FrameRounding");
 
+   lua_pushnumber(LuauState, Style.ScrollbarRounding);
+   lua_setfield(LuauState, -2, "ScrollbarRounding");
+
+   lua_pushnumber(LuauState, Style.GrabRounding);
+   lua_setfield(LuauState, -2, "GrabRounding");
+
    lua_pushnumber(LuauState, Style.ImageRounding);
    lua_setfield(LuauState, -2, "ImageRounding");
+
+   lua_pushnumber(LuauState, Style.TabRounding);
+   lua_setfield(LuauState, -2, "TabRounding");
+
+   lua_pushnumber(LuauState, Style.TreeLinesRounding);
+   lua_setfield(LuauState, -2, "TreeLinesRounding");
+
+   lua_pushnumber(LuauState, Style.MenuItemRounding);
+   lua_setfield(LuauState, -2, "MenuItemRounding");
+
+   lua_pushnumber(LuauState, Style.SelectableRounding);
+   lua_setfield(LuauState, -2, "SelectableRounding");
+
+   lua_pushnumber(LuauState, Style.DragDropTargetRounding);
+   lua_setfield(LuauState, -2, "DragDropTargetRounding");
 
    lua_createtable(LuauState, ImGuiCol_COUNT, 0);
 
@@ -1135,8 +1165,36 @@ ImGuiStyle Gui::CheckStyle(lua_State* LuauState, int Index)
    Style.FrameRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
+   lua_getfield(LuauState, Index, "ScrollbarRounding");
+   Style.ScrollbarRounding= luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "GrabRounding");
+   Style.GrabRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
    lua_getfield(LuauState, Index, "ImageRounding");
    Style.ImageRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "TabRounding");
+   Style.TabRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "TreeLinesRounding");
+   Style.TreeLinesRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "MenuItemRounding");
+   Style.MenuItemRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "SelectableRounding");
+   Style.SelectableRounding = luaL_checknumber(LuauState, -1);
+   lua_pop(LuauState, 1);
+
+   lua_getfield(LuauState, Index, "DragDropTargetRounding");
+   Style.DragDropTargetRounding = luaL_checknumber(LuauState, -1);
    lua_pop(LuauState, 1);
 
    lua_getfield(LuauState, Index, "Colors");
@@ -1419,6 +1477,7 @@ luaL_Reg Gui::Functions[] = {
    { "Unindent", Unindent },
    { "Separator", Separator },
    { "Bullet", Bullet },
+   { "Dummy", Dummy },
 
    { "CollapsingHeader", CollapsingHeader },
 

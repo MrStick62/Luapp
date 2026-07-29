@@ -107,7 +107,7 @@ declare Font: Font_Class
 -- Gui color indices --
 -----------------------
 
-type GuiColor = number
+export type GuiColor = number
 
 declare class GuiColors
 end
@@ -277,7 +277,14 @@ export type GuiStyle = {
     PopupRounding: number,
     FramePadding: Vec2,
 	FrameRounding: number,
+    ScrollbarRounding: number,
+    GrabRounding: number,
 	ImageRounding: number,
+    TabRounding: number,
+    TreeLinesRounding: number,
+    MenuItemRounding: number,
+    SelectableRounding: number,
+    DragDropTargetRounding: number,
 	--- Index with GuiColor
 	Colors: { Color },
 }
@@ -731,6 +738,7 @@ declare class Gui_Class
 	Unindent: (Width: number?) -> ()
 	Separator: () -> ()
 	Bullet: () -> ()
+    Dummy: (Size: Vec2) -> ()
 
 	CollapsingHeader: (Label: string, Flags: GuiTreeNodeFlags?) -> boolean
 

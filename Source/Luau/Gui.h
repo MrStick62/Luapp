@@ -94,6 +94,7 @@ private:
    static int Unindent(lua_State* LuauState);
    static int Separator(lua_State* LuauState);
    static int Bullet(lua_State* LuauState);
+   static int Dummy(lua_State* LuauState);
 
    static int CollapsingHeader(lua_State* LuauState);
 
