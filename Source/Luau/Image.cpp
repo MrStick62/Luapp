@@ -1,6 +1,7 @@
 #include "Image.h"
 
 #include <array>
+#include <vector>
 #include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION

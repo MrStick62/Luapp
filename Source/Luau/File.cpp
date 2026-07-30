@@ -1,6 +1,7 @@
 #include "File.h"
 
 #include <array>
+#include <vector>
 #include <cstring>
 #include <iostream>
 
