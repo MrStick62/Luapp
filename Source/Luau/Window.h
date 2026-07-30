@@ -20,6 +20,7 @@ private:
    static int SetSizeLimits(lua_State* LuauState);
 
    static int SetTitle(lua_State* LuauState);
+   static int SetIcon(lua_State* LuauState);
 
    static int Close(lua_State* LuauState);
 

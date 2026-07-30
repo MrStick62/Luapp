@@ -79,8 +79,10 @@ declare class Image
 end
 
 declare class Image_Class
-    --- Use out path if you want to copy the file to a permanent location
-    New: (FilePath: string, OutPath: string?) -> Image?
+    --- Use out path if you want to copy the file to a new location
+    --- Out path always creates a .png file
+    --- Out scale allows you to copy to a upscaled/downscaled version. (0.5 outputs an image with half the width and height)
+    New: (FilePath: string, OutPath: string?, OutScale: number?) -> Image?
 end
 
 declare Image: Image_Class
@@ -861,6 +863,7 @@ declare class Window_Class
     SetSizeLimits: (Min: Vec2?, Max: Vec2?) -> ()
 
     SetTitle: (Title: string) -> ()
+    SetIcon: (Path: string) -> ()
 
     Close: () -> ()
 end

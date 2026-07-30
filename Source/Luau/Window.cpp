@@ -1,15 +1,20 @@
 #include "Window.h"
 
 #include <array>
+#include <filesystem>
 
 #include <lua.h>
 #include <lualib.h>
 #include <luacode.h>
 
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include <stb_image.h>
 
 #include "Vec2.h"
 #include "LuauHelp.h"
+
+#include "../App.h"
 
 namespace Luau
 {
@@ -56,6 +61,23 @@ int Window::SetTitle(lua_State* LuauState)
    return 0;
 }
 
+int Window::SetIcon(lua_State* LuauState)
+{
+   std::string Path = (App::GetPath() / luaL_checkstring(LuauState, 1)).string();
+
+   GLFWimage Icon;
+
+   Icon.pixels = stbi_load(Path.data(), &Icon.width, &Icon.height, nullptr, 4);
+
+   if (Icon.pixels)
+   {
+      glfwSetWindowIcon(WindowRef, 1, &Icon);
+      stbi_image_free(Icon.pixels);
+   }
+
+   return 0;
+}
+
 int Window::Close(lua_State* LuauState)
 {
    glfwSetWindowShouldClose(WindowRef, true);
@@ -76,6 +98,7 @@ luaL_Reg Window::Functions[] = {
    { "SetSizeLimits", SetSizeLimits },
 
    { "SetTitle", SetTitle },
+   { "SetIcon", SetIcon },
 
    { "Close", Close },
 };
