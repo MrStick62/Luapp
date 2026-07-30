@@ -1,23 +1,25 @@
 #include "Image.h"
-#include "LuauHelp.h"
 
 #include <array>
-#include <iostream>
 #include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
+#include <avir.h>
+#include <glad/gl.h>
 
 #include <lua.h>
 #include <lualib.h>
 #include <luacode.h>
 
-#include <glad/gl.h>
-
 #include "Vec2.h"
+#include "LuauHelp.h"
 
 #include "../App.h"
 #include "../FileHelp.h"
+
 
 namespace Luau
 {
@@ -26,6 +28,7 @@ int Image::New(lua_State* LuauState)
 {
    std::filesystem::path FilePath = luaL_checkstring(LuauState, 1);
    std::filesystem::path OutPath = luaL_optstring(LuauState, 2, "");
+   float OutScale = luaL_optnumber(LuauState, 3, 1.0f);
 
    if (FilePath.is_relative())
       FilePath = App::GetPath() / FilePath;
@@ -45,16 +48,51 @@ int Image::New(lua_State* LuauState)
 
    GLuint ID;
 
-   if (!LoadTextureFromMemory(FileData, FileSize, &ID))
-   {
-      lua_pushnil(LuauState);
-      return 1;
-   }
+   int Width = 0;
+   int Height = 0;
+
+   unsigned char* ImageData = stbi_load_from_memory((const unsigned char*)FileData, FileSize, &Width, &Height, nullptr, 4);
+
+   if (ImageData == nullptr)
+      return false;
+
 
    if (OutPath.string().length() > 0)
    {
-      std::filesystem::copy_file(FilePath, OutPath);
+      int NewWidth = Width * OutScale;
+      int NewHeight = Height * OutScale;
+
+      std::vector<uint8_t> Output(NewWidth * NewHeight * 4);
+
+      avir::CImageResizer<> Resizer(8);
+      Resizer.resizeImage(ImageData, Width, Height, 0, Output.data(), NewWidth, NewHeight, 4, 0);
+
+      std::string FinalPath = OutPath.replace_extension(".png").string();
+      if (!stbi_write_png(FinalPath.c_str(), NewWidth, NewHeight, 4, Output.data(), NewWidth * 4))
+      {
+         stbi_image_free(ImageData);
+         lua_pushnil(LuauState);
+         return 1;
+      }
+   
+      if (!LoadTextureFromMemory(Output.data(), NewWidth, NewHeight, NewWidth * NewHeight * 4, &ID))
+      {
+         stbi_image_free(ImageData);
+         lua_pushnil(LuauState);
+         return 1;
+      }
    }
+   else 
+   {
+      if (!LoadTextureFromMemory(ImageData, Width, Height, FileSize, &ID))
+      {
+         stbi_image_free(ImageData);
+         lua_pushnil(LuauState);
+         return 1;
+      }
+   }
+
+   stbi_image_free(ImageData);
 
    lua_createtable(LuauState, 0, 1);
 
@@ -101,15 +139,8 @@ int Image::GetSize(lua_State* LuauState)
    return 1;
 }
 
-bool Image::LoadTextureFromMemory(const void* Data, size_t DataSize, GLuint* OutTexture)
+bool Image::LoadTextureFromMemory(unsigned char* ImageData, int Width, int Height, size_t DataSize, GLuint* OutTexture)
 {
-   int Width = 0;
-   int Height = 0;
-
-   unsigned char* ImageData = stbi_load_from_memory((const unsigned char*)Data, DataSize, &Width, &Height, nullptr, 4);
-   if (ImageData == nullptr)
-      return false;
-
    GLuint ImageTexture;
    glGenTextures(1, &ImageTexture);
    glBindTexture(GL_TEXTURE_2D, ImageTexture);
@@ -119,7 +150,6 @@ bool Image::LoadTextureFromMemory(const void* Data, size_t DataSize, GLuint* Out
 
    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageData);
-   stbi_image_free(ImageData);
 
    *OutTexture = ImageTexture;
 

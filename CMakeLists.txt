@@ -71,6 +71,7 @@ target_link_libraries(Luapp
 target_include_directories(Luapp
    PRIVATE
       External/stb
+      External/avir
 )
 
 target_compile_definitions(Luapp

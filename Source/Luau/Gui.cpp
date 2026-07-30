@@ -1556,7 +1556,7 @@ luaL_Reg Gui::Functions[] = {
    { "ImageButton", ImageButton },
 
    { "Text", Text },
-   { "SeparatorText", Text },
+   { "SeparatorText", SeparatorText },
 
    { "TextLink", TextLink },
    { "TextLinkOpenURL", TextLinkOpenURL },

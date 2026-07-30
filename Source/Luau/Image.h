@@ -21,7 +21,7 @@ private:
    static int Destroy(lua_State* LuauState);
    static int GetSize(lua_State* LuauState);
 
-   static bool LoadTextureFromMemory(const void* Data, size_t DataSize, GLuint* OutTexture);
+   static bool LoadTextureFromMemory(unsigned char* ImageData, int Width, int Height, size_t DataSize, GLuint* OutTexture);
 
    static luaL_Reg Functions[];
    static luaL_Reg MetaFunctions[];
