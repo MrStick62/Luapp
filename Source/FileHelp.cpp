@@ -32,7 +32,7 @@ std::filesystem::path GetHomeDirectory()
 
 std::filesystem::path GetProjectDirectory()
 {
-   return GetExecutableDirectory().parent_path().parent_path();
+   return std::filesystem::path(SOURCE_DIR);
 }
 
 std::filesystem::path GetExecutableDirectory()

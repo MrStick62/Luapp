@@ -251,6 +251,21 @@ end
 
 declare GuiDirections: GuiDirections_Class
 
+-----------------------
+-- Gui mouse buttons --
+-----------------------
+
+declare class GuiMouseButton
+end
+
+declare class GuiMouseButtons_Class
+    Left: GuiMouseButton
+    Right: GuiMouseButton
+    Middle: GuiMouseButton
+end
+
+declare GuiMouseButtons: GuiMouseButtons_Class
+
 ---------------------------------
 -- Gui table background target --
 ---------------------------------
@@ -790,6 +805,7 @@ declare class Gui_Class
 	Checkbox: (Label: string, Checked: boolean) -> boolean
 
     IsItemHovered: () -> boolean
+    IsItemClicked: (Button: GuiMouseButton?) -> boolean
 
 	Selectable: (Label: string, Selected: boolean?, Flags: GuiSelectableFlags?, Size: Vec2?) -> boolean
 
