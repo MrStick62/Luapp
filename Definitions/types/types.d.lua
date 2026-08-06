@@ -659,7 +659,7 @@ declare class Gui_Class
     --- Call before Begin() to specify the size of the window
 	SetNextWindowSize: (Size: Vec2) -> ()
     --- Call before Begin() to specify the position of the window
-	SetNextWindowPos: (Size: Vec2) -> ()
+	SetNextWindowPos: (Pos: Vec2) -> ()
     --- Call before Begin() to specify the minimum and maximum size of the next window
 	SetNextWindowSizeConstraints: (Min: Vec2, Max: Vec2) -> ()
 
