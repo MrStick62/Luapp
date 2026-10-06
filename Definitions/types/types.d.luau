@@ -4,7 +4,7 @@
 
 export type ConfigData = { [string | number]: ConfigData | number | string | boolean }
 
-declare class Config_Class
+declare extern type Config_Class with
     --- Saves config data as a json to the specified file path. Path is always relative to the main file
     Save: (Config: ConfigData, Path: string) -> ()
     --- Loads config data from a json file at the specified path. Path is always relative to the main file
@@ -22,7 +22,7 @@ export type Vec2Data = {
     Y: number,
 }
 
-declare class Vec2
+declare extern type Vec2 with
     X: number
     Y: number
 
@@ -32,7 +32,7 @@ declare class Vec2
     function __div(self, Value: number): Vec2
 end
 
-declare class Vec2_Class
+declare extern type Vec2_Class with
     New: (X: number, Y: number) -> Vec2
     Lerp: (V1: Vec2, V2: Vec2, T: number) -> Vec2
 end
@@ -50,7 +50,7 @@ export type Color = {
     A: number,
 }
 
-declare class Color_Class
+declare extern type Color_Class with
     New: (R: number, G: number, B: number, A: number) -> Color
 end
 
@@ -60,10 +60,10 @@ declare Color: Color_Class
 -- Flags class --
 -----------------
 
-declare class Flags
+declare extern type Flags with
 end
 
-declare class Flags_Class
+declare extern type Flags_Class with
 	Unite: (Flags: { Flags }) -> Flags
 end
 
@@ -73,12 +73,12 @@ declare Flags: Flags_Class
 -- Image class --
 -----------------
 
-declare class Image
+declare extern type Image with
     function Destroy(self): ()
     function GetSize(self): Vec2
 end
 
-declare class Image_Class
+declare extern type Image_Class with
     --- Use out path if you want to copy the file to a new location
     --- Out path always creates a .png file
     --- Out scale allows you to copy to a upscaled/downscaled version. (0.5 outputs an image with half the width and height)
@@ -91,11 +91,11 @@ declare Image: Image_Class
 -- Font class --
 ----------------
 
-declare class Font
+declare extern type Font with
     Name: string
 end
 
-declare class Font_Class
+declare extern type Font_Class with
     --- Load a font from a .ttf file. Path is always relative to the main file
     --- Automatically added to the font list returned from GetAll()
     LoadNew: (FontPath: string, IconPath: string?) -> Font
@@ -111,10 +111,10 @@ declare Font: Font_Class
 
 export type GuiColor = number
 
-declare class GuiColors
+declare extern type GuiColors with
 end
 
-declare class GuiColors_Class
+declare extern type GuiColors_Class with
     Text: GuiColor
     TextDisabled: GuiColor
     WindowBg: GuiColor
@@ -185,7 +185,7 @@ declare GuiColors: GuiColors_Class
 
 type GuiStyleVar = number
 
-declare class GuiStyleVars_Class
+declare extern type GuiStyleVars_Class with
     Alpha: GuiStyleVar                    -- number 
     DisabledAlpha: GuiStyleVar            -- number
     WindowPadding: GuiStyleVar            -- Vec2 
@@ -238,10 +238,10 @@ declare GuiStyleVars: GuiStyleVars_Class
 -- Gui directions --
 --------------------
 
-declare class GuiDirection
+declare extern type GuiDirection with
 end
 
-declare class GuiDirections_Class
+declare extern type GuiDirections_Class with
     None: GuiDirection
     Left: GuiDirection
     Right: GuiDirection
@@ -255,10 +255,10 @@ declare GuiDirections: GuiDirections_Class
 -- Gui mouse buttons --
 -----------------------
 
-declare class GuiMouseButton
+declare extern type GuiMouseButton with
 end
 
-declare class GuiMouseButtons_Class
+declare extern type GuiMouseButtons_Class with
     Left: GuiMouseButton
     Right: GuiMouseButton
     Middle: GuiMouseButton
@@ -270,10 +270,10 @@ declare GuiMouseButtons: GuiMouseButtons_Class
 -- Gui table background target --
 ---------------------------------
 
-declare class GuiTableBgTarget
+declare extern type GuiTableBgTarget with
 end
 
-declare class GuiTableBgTarget_Class
+declare extern type GuiTableBgTarget_Class with
 	None: GuiTableBgTarget
 	RowBg1: GuiTableBgTarget
 	RowBg2: GuiTableBgTarget
@@ -320,7 +320,7 @@ export type GuiStyle = {
 
 export type GuiWindowFlags = Flags
 
-declare class GuiWindowFlags_Class
+declare extern type GuiWindowFlags_Class with
 	None: GuiWindowFlags
 	NoTitleBar: GuiWindowFlags
 	NoResize: GuiWindowFlags
@@ -361,7 +361,7 @@ declare GuiWindowFlags: GuiWindowFlags_Class
 
 export type GuiChildFlags = Flags
 
-declare class GuiChildFlags_Class
+declare extern type GuiChildFlags_Class with
 	None: GuiChildFlags
 	Borders: GuiChildFlags
 	AlwaysUseWindowPadding: GuiChildFlags
@@ -382,7 +382,7 @@ declare GuiChildFlags: GuiChildFlags_Class
 
 export type GuiButtonFlags = Flags
 
-declare class GuiButtonFlags_Class
+declare extern type GuiButtonFlags_Class with
 	None: GuiButtonFlags
 	MouseButtonLeft: GuiButtonFlags
 	MouseButtonRight: GuiButtonFlags
@@ -399,7 +399,7 @@ declare GuiButtonFlags: GuiButtonFlags_Class
 
 export type GuiSliderFlags = Flags
 
-declare class GuiSliderFlags_Class
+declare extern type GuiSliderFlags_Class with
 	None: GuiSliderFlags
 	Logarithmic: GuiSliderFlags
 	NoRoundToFormat: GuiSliderFlags
@@ -420,7 +420,7 @@ declare GuiSliderFlags: GuiSliderFlags_Class
 
 export type GuiInputTextFlags = Flags
 
-declare class GuiInputTextFlags_Class
+declare extern type GuiInputTextFlags_Class with
 	None: GuiInputTextFlags
 	CharsDecimal: GuiInputTextFlags
 	CharsHexadecimal: GuiInputTextFlags
@@ -457,7 +457,7 @@ declare GuiInputTextFlags: GuiInputTextFlags_Class
 
 export type GuiTreeNodeFlags = Flags
 
-declare class GuiTreeNodeFlags_Class
+declare extern type GuiTreeNodeFlags_Class with
 	None: GuiTreeNodeFlags
 	Selected: GuiTreeNodeFlags
 	Framed: GuiTreeNodeFlags
@@ -490,7 +490,7 @@ declare GuiTreeNodeFlags: GuiTreeNodeFlags_Class
 
 export type GuiSelectableFlags = Flags
 
-declare class GuiSelectableFlags_Class
+declare extern type GuiSelectableFlags_Class with
 	None: GuiSelectableFlags
 	NoAutoClosePopups: GuiSelectableFlags
 	SpanAllColumns: GuiSelectableFlags
@@ -509,7 +509,7 @@ declare GuiSelectableFlags: GuiSelectableFlags_Class
 
 export type GuiTabBarFlags = Flags
 
-declare class GuiTabBarFlags_Class
+declare extern type GuiTabBarFlags_Class with
 	None: GuiTabBarFlags
 	Reorderable: GuiTabBarFlags
 	AutoSelectNewTabs: GuiTabBarFlags
@@ -531,7 +531,7 @@ declare GuiTabBarFlags: GuiTabBarFlags_Class
 
 export type GuiTabItemFlags = Flags
 
-declare class GuiTabItemFlags_Class
+declare extern type GuiTabItemFlags_Class with
 	None: GuiTabItemFlags
 	UnsavedDocument: GuiTabItemFlags
 	SetSelected: GuiTabItemFlags
@@ -552,7 +552,7 @@ declare GuiTabItemFlags: GuiTabItemFlags_Class
 
 export type GuiTableFlags = Flags
 
-declare class GuiTableFlags_Class
+declare extern type GuiTableFlags_Class with
 	None: GuiTableFlags
 	Resizable: GuiTableFlags
 	Reorderable: GuiTableFlags
@@ -599,7 +599,7 @@ declare GuiTableFlags: GuiTableFlags_Class
 
 export type GuiTableColumnFlags = Flags
 
-declare class GuiTableColumnFlags_Class
+declare extern type GuiTableColumnFlags_Class with
 	None: GuiTableColumnFlags
 	Disabled: GuiTableColumnFlags
 	DefaultHide: GuiTableColumnFlags
@@ -634,7 +634,7 @@ declare GuiTableColumnFlags: GuiTableColumnFlags_Class
 
 export type GuiTableRowFlags = Flags
 
-declare class GuiTableRowFlags_Class
+declare extern type GuiTableRowFlags_Class with
 	None: GuiTableRowFlags
 	Headers: GuiTableRowFlags
 end
@@ -645,14 +645,14 @@ declare GuiTableRowFlags: GuiTableRowFlags_Class
 -- Main Gui class --
 --------------------
 
--- The Gui class is essentially a Luau wrapper for the C++ Gui library Dear ImGui
+-- The Gui extern type is essentially a Luau wrapper for the C++ Gui library Dear ImGui
 -- To take advantage of Luau's unique features, some functions have slightly different behaviors from ImGui
 -- Visit https://github.com/ocornut/imgui for more detailed documentation on the library
 
 -- Bonus tips:
 -- 1. Hide the label of a Gui item by prefixing the string with "##"
 
-declare class Gui_Class
+declare extern type Gui_Class with
     --- Saves the Gui layout in a file at the specified path. Path is always relative to the main file
     SetSaveFile: (Path: string) -> ()
 
@@ -862,7 +862,7 @@ declare Gui: Gui_Class
 -- Window class --
 ------------------
 
-declare class File_Class
+declare extern type File_Class with
     --- Opens a file explorer dialog to select a file from
     OpenDialog: (Filters: { [string]: string }) -> string?
 end
@@ -873,7 +873,7 @@ declare File: File_Class
 -- Window class --
 ------------------
 
-declare class Window_Class
+declare extern type Window_Class with
     GetSize: () -> Vec2
     SetSize: (Size: Vec2) -> ()
     SetSizeLimits: (Min: Vec2?, Max: Vec2?) -> ()
@@ -890,7 +890,7 @@ declare Window: Window_Class
 -- Web class --
 ---------------
 
-declare class Web_Class
+declare extern type Web_Class with
     OpenPage: (URL: string) -> boolean
     ConnectToSystem: (Hostname: string, ScreenWidth: number?, ScreenHeight: number?, Username: string?) -> ()
 end
@@ -901,10 +901,10 @@ declare Web: Web_Class
 -- Input keys enum --
 ---------------------
 
-declare class InputKey
+declare extern type InputKey with
 end
 
-declare class InputKey_Class
+declare extern type InputKey_Class with
     None: InputKey
     Tab: InputKey
     LeftArrow: InputKey
@@ -1043,7 +1043,7 @@ declare InputKey: InputKey_Class
 
 export type InputMod = Flags
 
-declare class InputMod_Class
+declare extern type InputMod_Class with
     Ctrl: InputMod -- Ctrl (non-MacOS), Cmd (MacOS)
     Shift: InputMod
     Alt: InputMod
@@ -1054,7 +1054,7 @@ declare InputMod: InputMod_Class
 
 export type InputFlags = Flags
 
-declare class InputFlags_Class
+declare extern type InputFlags_Class with
     None: InputFlags
     Repeat: InputFlags
     RouteActive: InputFlags
@@ -1074,7 +1074,7 @@ declare InputFlags: InputFlags_Class
 -- Input functions --
 ---------------------
 
-declare class Input_Class
+declare extern type Input_Class with
     --- Returns true if key is being held down
     IsKeyDown: (Key: InputKey) -> boolean
     --- Returns true if key was pressed THIS frame
@@ -1096,7 +1096,7 @@ declare Input: Input_Class
 -- Icon list enum --
 --------------------
 
-declare class Icons_Class
+declare extern type Icons_Class with
     Num0: string
     Num1: string
     Num2: string
