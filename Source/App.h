@@ -25,6 +25,7 @@ public:
    static void Main();
    static void Tick(float DeltaTime);
    static void OnGui(float DeltaTime);
+   static void Render(float DeltaTime);
    static void OnExit();
 
    static std::string GetName() { return AppName; }

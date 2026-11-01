@@ -16,7 +16,6 @@
 namespace Luau
 {
 
-
 int File::OpenDialog(lua_State* LuauState)
 {
    luaL_checktype(LuauState, 1, LUA_TTABLE);

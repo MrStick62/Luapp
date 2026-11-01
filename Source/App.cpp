@@ -14,8 +14,10 @@
 #include "Luau/Gui.h"
 #include "Luau/Web.h"
 #include "Luau/Vec2.h"
+#include "Luau/Vec3.h"
 #include "Luau/Font.h"
 #include "Luau/File.h"
+#include "Luau/Draw.h"
 #include "Luau/Color.h"
 #include "Luau/Flags.h"
 #include "Luau/Input.h"
@@ -55,8 +57,10 @@ void App::Init(const std::string& Name, GLFWwindow* Window)
    Luau::Web::LoadGlobal(LuauState);
    Luau::Gui::LoadGlobal(LuauState);
    Luau::Vec2::LoadGlobal(LuauState);
+   Luau::Vec3::LoadGlobal(LuauState);
    Luau::Font::LoadGlobal(LuauState);
    Luau::File::LoadGlobal(LuauState);
+   Luau::Draw::LoadGlobal(LuauState);
    Luau::Color::LoadGlobal(LuauState);
    Luau::Flags::LoadGlobal(LuauState);
    Luau::Input::LoadGlobal(LuauState);
@@ -122,6 +126,11 @@ void App::OnGui(float DeltaTime)
    lua_pcall(LuauState, 1, 0, 0);
 
    Luau::Gui::HandleDragDrop(LuauState);
+}
+
+void App::Render(float DeltaTime)
+{
+   Luau::Draw::RenderDrawData();
 }
 
 void App::OnExit()

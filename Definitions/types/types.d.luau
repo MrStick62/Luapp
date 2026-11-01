@@ -17,11 +17,6 @@ declare Config: Config_Class
 -- Vec2 class --
 ----------------
 
-export type Vec2Data = {
-    X: number,
-    Y: number,
-}
-
 declare extern type Vec2 with
     X: number
     Y: number
@@ -39,6 +34,28 @@ end
 
 declare Vec2: Vec2_Class
 
+----------------
+-- Vec3 class --
+----------------
+
+declare extern type Vec3 with
+    X: number
+    Y: number
+    Z: number
+
+    function __add(self, Value: Vec3): Vec3
+    function __sub(self, Value: Vec3): Vec3
+    function __mul(self, Value: number): Vec3
+    function __div(self, Value: number): Vec3
+end
+
+declare extern type Vec3_Class with
+    New: (X: number, Y: number, Z: number) -> Vec3
+    Lerp: (V1: Vec3, V2: Vec3, T: number) -> Vec3
+end
+
+declare Vec3: Vec3_Class
+
 -----------------
 -- Color class --
 -----------------
@@ -55,6 +72,16 @@ declare extern type Color_Class with
 end
 
 declare Color: Color_Class
+
+----------------
+-- Draw class --
+----------------
+
+declare extern type Draw_Class with
+    DrawLine: (V1: Vec3, V2: Vec3, C1: Color, C2: Color?) -> ()
+end
+
+declare Draw: Draw_Class
 
 -----------------
 -- Flags class --
