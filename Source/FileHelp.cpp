@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <filesystem>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -32,7 +33,7 @@ std::filesystem::path GetHomeDirectory()
 
 std::filesystem::path GetProjectDirectory()
 {
-   return GetExecutableDirectory().parent_path().parent_path();
+   return std::filesystem::path(SOURCE_DIR);
 }
 
 std::filesystem::path GetExecutableDirectory()
@@ -94,6 +95,13 @@ std::string ReadWholeFile(const std::string& Path)
 
 bool WriteWholeFile(const std::string& Path, const std::string& Content)
 {
+   std::filesystem::path FilePath(Path);
+
+   if (FilePath.has_parent_path())
+   {
+      std::filesystem::create_directories(FilePath.parent_path());
+   }
+
    std::ofstream File(Path, std::ios::binary);
 
    if (!File)

@@ -16,10 +16,10 @@ void Run(const std::string& TargetPath)
 
    std::filesystem::path Project(FileHelp::GetProjectDirectory());
    std::string SettingsContent = FileHelp::ReadWholeFile((Project / "Definitions" / ".vscode" / "settings.json").string());
-   std::string TypesContent = FileHelp::ReadWholeFile((Project / "Definitions" / "types" / "types.d.lua").string());
+   std::string TypesContent = FileHelp::ReadWholeFile((Project / "Definitions" / "types" / "types.d.luau").string());
 
    FileHelp::WriteWholeFile((Path / ".vscode" / "settings.json").string(), SettingsContent);
-   FileHelp::WriteWholeFile((Path / "types" / "types.d.lua").string(), TypesContent);
+   FileHelp::WriteWholeFile((Path / "types" / "types.d.luau").string(), TypesContent);
 }
 
 }

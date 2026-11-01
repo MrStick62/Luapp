@@ -22,6 +22,9 @@ void DrawWindow(GLFWwindow* Window);
 
 int main(int argc, char* argv[])
 {
+#ifdef LUAU_ENTRY_POINT
+   std::string ProgramName = LUAU_ENTRY_POINT;
+#else
    if (argc < 2)
    {
       std::cerr << "Path not specified!" << std::endl;
@@ -41,6 +44,7 @@ int main(int argc, char* argv[])
    }
 
    std::string ProgramName(argv[1]);
+#endif
 
    /**
     *    Initialize GLFW/WINDOW
@@ -112,9 +116,16 @@ int main(int argc, char* argv[])
 
    while (!glfwWindowShouldClose(Window))
    {
-      glfwPollEvents();
+      if (glfwGetWindowAttrib(Window, GLFW_FOCUSED))
+      {
+         glfwPollEvents();
 
-      DrawWindow(Window);
+         DrawWindow(Window);
+      }
+      else
+      {
+         glfwWaitEvents();
+      }
    }
 
    App::OnExit();

@@ -1,5 +1,5 @@
 {
-    "luau-lsp.types.definitionFiles": ["types/types.d.lua"],
+    "luau-lsp.types.definitionFiles": ["types/types.d.luau"],
     "luau-lsp.sourcemap.autogenerate": false,
     "luau-lsp.sourcemap.enabled": false,
     "luau-lsp.platform.type": "standard",

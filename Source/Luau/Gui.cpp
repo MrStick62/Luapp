@@ -887,6 +887,15 @@ int Gui::IsItemHovered(lua_State* LuauState)
    return 1;
 }
 
+int Gui::IsItemClicked(lua_State* LuauState)
+{
+   ImGuiMouseButton Button = luaL_optinteger(LuauState, 1, 0);
+
+   lua_pushboolean(LuauState, ImGui::IsItemClicked(Button));
+
+   return 1;
+}
+
 int Gui::Selectable(lua_State* LuauState)
 {
    const char* Label = luaL_checkstring(LuauState, 1);
@@ -1576,6 +1585,7 @@ luaL_Reg Gui::Functions[] = {
    { "Checkbox", Checkbox },
 
    { "IsItemHovered", IsItemHovered },
+   { "IsItemClicked", IsItemClicked },
 
    { "Selectable", Selectable },
 
@@ -1736,6 +1746,12 @@ std::pair<std::string, int> Gui::Directions[] = {
    { "Right", ImGuiDir_Right },
    { "Up", ImGuiDir_Up },
    { "Down", ImGuiDir_Down },
+};
+
+std::pair<std::string, int> Gui::MouseButtons[] = {
+   { "Left", ImGuiMouseButton_Left },
+   { "Right", ImGuiMouseButton_Right },
+   { "Middle", ImGuiMouseButton_Middle },
 };
 
 std::pair<std::string, int> Gui::TableBgTargets[] = {
@@ -1975,6 +1991,7 @@ void Gui::LoadGlobal(lua_State* LuauState)
    LuauHelp::SetupEnumGlobal(LuauState, GuiColors, std::size(GuiColors), "GuiColors", 1);
    LuauHelp::SetupEnumGlobal(LuauState, StyleVars, std::size(StyleVars), "GuiStyleVars");
    LuauHelp::SetupEnumGlobal(LuauState, Directions, std::size(Directions), "GuiDirections");
+   LuauHelp::SetupEnumGlobal(LuauState, MouseButtons, std::size(MouseButtons), "GuiMouseButtons");
    LuauHelp::SetupEnumGlobal(LuauState, TableBgTargets, std::size(TableBgTargets), "GuiTableBgTarget");
    LuauHelp::SetupEnumGlobal(LuauState, WindowFlags, std::size(WindowFlags), "GuiWindowFlags");
    LuauHelp::SetupEnumGlobal(LuauState, ChildFlags, std::size(ChildFlags), "GuiChildFlags");
